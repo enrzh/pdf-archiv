@@ -56,6 +56,11 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         }
     };
 
+    const handleLanguageChange = (language: Language) => {
+        setLang(language);
+        window.localStorage.setItem('language', language);
+    };
+
     const handleSaveNewTag = () => {
         if (newTagName.trim()) {
             onAddTag(newTagName.trim());
@@ -126,7 +131,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         {(['DE', 'EN', 'CN'] as Language[]).map((l) => (
                             <button
                                 key={l}
-                                onClick={() => setLang(l)}
+                                onClick={() => handleLanguageChange(l)}
                                 className={`h-10 rounded-xl text-xs font-bold transition-all ${
                                     lang === l 
                                     ? 'bg-white text-black shadow-lg' 
