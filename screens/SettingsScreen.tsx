@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Moon, Sun, Globe, Tag, Plus, Edit2, Trash2, X, Check } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -27,6 +28,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     const [editingTag, setEditingTag] = useState<{ original: string, current: string } | null>(null);
     const [isAddingTag, setIsAddingTag] = useState(false);
     const [newTagName, setNewTagName] = useState('');
+    const [pendingDeleteTag, setPendingDeleteTag] = useState<string | null>(null);
     const t = TRANSLATIONS[lang].settings;
 
     useEffect(() => {
@@ -177,9 +179,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                                      </button>
                                      <button 
                                         onClick={() => {
-                                            if (window.confirm(t.deleteCategoryConfirm)) {
-                                                onDeleteTag(tag);
-                                            }
+                                            setPendingDeleteTag(tag);
                                         }}
                                         className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                     >
@@ -193,6 +193,21 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             </div>
 
             <BottomNav activeTab="settings" onNavigate={onNavigate} lang={lang} />
+
+            {pendingDeleteTag && (
+                <ConfirmDialog
+                    title={t.delete}
+                    message={t.deleteCategoryConfirm}
+                    confirmLabel={t.delete}
+                    cancelLabel={t.cancel}
+                    tone="danger"
+                    onCancel={() => setPendingDeleteTag(null)}
+                    onConfirm={() => {
+                        onDeleteTag(pendingDeleteTag);
+                        setPendingDeleteTag(null);
+                    }}
+                />
+            )}
 
             {/* Add/Edit Modal */}
             {(isAddingTag || editingTag) && (

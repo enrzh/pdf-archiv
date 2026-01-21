@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, SlidersHorizontal, MoreVertical, FileText, BadgeCheck, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Share, Trash2, Eye, EyeOff } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -29,6 +30,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
 
     // Menu State
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
     const toggleTagFilter = (tag: string) => {
         if (activeTagFilters.includes(tag)) {
@@ -129,9 +131,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
 
     const handleDeleteClick = (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
-        if (window.confirm(t.deleteConfirm)) {
-            onDelete(id);
-        }
+        setPendingDeleteId(id);
         setActiveMenuId(null);
     };
 
@@ -360,6 +360,21 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
             </button>
 
             <BottomNav activeTab="dashboard" onNavigate={onNavigate} lang={lang} />
+
+            {pendingDeleteId && (
+                <ConfirmDialog
+                    title={t.delete}
+                    message={t.deleteConfirm}
+                    confirmLabel={t.delete}
+                    cancelLabel={t.cancel}
+                    tone="danger"
+                    onCancel={() => setPendingDeleteId(null)}
+                    onConfirm={() => {
+                        onDelete(pendingDeleteId);
+                        setPendingDeleteId(null);
+                    }}
+                />
+            )}
 
             {/* Date Picker Modal */}
             {showDatePicker && (

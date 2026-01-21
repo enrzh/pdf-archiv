@@ -31,7 +31,8 @@ export const TRANSLATIONS = {
       markUnread: 'Mark as unread',
       status: 'Status',
       read: 'Read',
-      unread: 'Unread'
+      unread: 'Unread',
+      cancel: 'Cancel'
     },
     upload: {
       titleNew: 'New Archive',
@@ -72,7 +73,10 @@ export const TRANSLATIONS = {
       pageNumbers: 'Page Numbers',
       pageNumbersSub: 'Automatic numbering',
       found: 'Found:',
-      printPdf: 'Print & Export PDF'
+      printPdf: 'Print & Export PDF',
+      confirmPrintTitle: 'Ready to print?',
+      confirmPrintIntro: 'Prepare print for {count} documents:',
+      cancel: 'Cancel'
     },
     folders: {
       title: 'Folders',
@@ -137,7 +141,8 @@ export const TRANSLATIONS = {
       markUnread: 'Als ungelesen markieren',
       status: 'Status',
       read: 'Gelesen',
-      unread: 'Ungelesen'
+      unread: 'Ungelesen',
+      cancel: 'Abbrechen'
     },
     upload: {
       titleNew: 'Neues Archiv',
@@ -178,7 +183,10 @@ export const TRANSLATIONS = {
       pageNumbers: 'Seitenzahlen',
       pageNumbersSub: 'Automatische Nummerierung',
       found: 'Gefunden:',
-      printPdf: 'PDF drucken & exportieren'
+      printPdf: 'PDF drucken & exportieren',
+      confirmPrintTitle: 'Druck vorbereiten?',
+      confirmPrintIntro: 'Druck für {count} Dokumente vorbereiten:',
+      cancel: 'Abbrechen'
     },
     folders: {
       title: 'Ordner',
@@ -243,7 +251,8 @@ export const TRANSLATIONS = {
       markUnread: '标记为未读',
       status: '状态',
       read: '已读',
-      unread: '未读'
+      unread: '未读',
+      cancel: '取消'
     },
     upload: {
       titleNew: '新存档',
@@ -284,7 +293,10 @@ export const TRANSLATIONS = {
       pageNumbers: '页码',
       pageNumbersSub: '自动编号',
       found: '找到:',
-      printPdf: '打印并导出 PDF'
+      printPdf: '打印并导出 PDF',
+      confirmPrintTitle: '准备打印？',
+      confirmPrintIntro: '为 {count} 份文档准备打印：',
+      cancel: '取消'
     },
     folders: {
       title: '文件夹',
