@@ -247,7 +247,6 @@ export default function App() {
             categories={categories}
             previewDefaultEnabled={previewDefaultEnabled}
             onBack={() => setCurrentScreen('dashboard')} 
-            onExport={() => setCurrentScreen('export')}
             onDelete={() => handleDelete(selectedFile.id)}
             onToggleStar={handleToggleStar}
             onToggleRead={handleToggleRead}

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, FileText, Star, PenLine, X, Check, Calendar, Tag, Share, Eye, EyeOff, Download, Monitor, MonitorOff } from 'lucide-react';
+import { ChevronLeft, FileText, Star, PenLine, X, Check, Calendar, Tag, Eye, EyeOff, Download, Monitor, MonitorOff } from 'lucide-react';
 import { Category, FileItem, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
 interface ViewerScreenProps {
     file: FileItem;
     onBack: () => void;
-    onExport: () => void;
     onDelete: () => void;
     onToggleStar: (id: string) => void;
     onToggleRead: (id: string) => void;
@@ -15,7 +14,7 @@ interface ViewerScreenProps {
     previewDefaultEnabled: boolean;
 }
 
-export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExport, onDelete, onToggleStar, onToggleRead, lang, categories, previewDefaultEnabled }) => {
+export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onDelete, onToggleStar, onToggleRead, lang, categories, previewDefaultEnabled }) => {
     const t = TRANSLATIONS[lang].viewer;
     const [isEditing, setIsEditing] = useState(false);
     const [editDate, setEditDate] = useState(file.date);
@@ -121,14 +120,6 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                     ) : (
                          <Eye size={22} strokeWidth={2.5} />
                     )}
-                </button>
-
-                {/* Export Bubble */}
-                <button 
-                    onClick={onExport}
-                    className="size-12 rounded-full bg-black flex items-center justify-center text-white shadow-glow ring-1 ring-white/10 active:scale-95 transition-all hover:bg-gray-900"
-                >
-                    <Share size={22} strokeWidth={2.5} />
                 </button>
 
                 {/* Download Bubble */}
