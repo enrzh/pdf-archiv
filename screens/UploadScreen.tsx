@@ -5,7 +5,7 @@ import { TRANSLATIONS } from '../translations';
 
 interface UploadScreenProps {
     onBack: () => void;
-    onArchive: (files: { file: File, size: string }[], date: Date, tags: string[]) => void;
+    onArchive: (files: { file: File, size: string }[], date: Date, tags: string[]) => void | Promise<void>;
     lang: Language;
     availableTags: string[];
 }
