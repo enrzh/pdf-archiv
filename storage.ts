@@ -1,10 +1,27 @@
 import { FileItem } from './types';
 
-const getApiBase = () => {
+const getHostName = () => {
   if (typeof window === 'undefined') {
-    return 'http://localhost:9002/api';
+    return 'localhost';
   }
-  return `http://${window.location.hostname}:9002/api`;
+  return window.location.hostname;
+};
+
+const API_PORT = 9002;
+
+const getApiOrigin = () => `http://${getHostName()}:${API_PORT}`;
+
+const getApiBase = () => `${getApiOrigin()}/api`;
+
+const resolveFileUrl = (fileUrl: string) => {
+  if (!fileUrl) {
+    return fileUrl;
+  }
+  if (/^https?:\/\//i.test(fileUrl)) {
+    return fileUrl;
+  }
+  const normalizedPath = fileUrl.startsWith('/') ? fileUrl : `/${fileUrl}`;
+  return `${getApiOrigin()}${normalizedPath}`;
 };
 const STORAGE_VERSION = 1;
 
@@ -48,7 +65,10 @@ export const savePdfFile = async (id: string, file: File, folder = 'pdfs') => {
     throw new Error('Failed to save PDF');
   }
   const data = (await response.json()) as PdfUploadResponse;
-  return data;
+  return {
+    ...data,
+    fileUrl: resolveFileUrl(data.fileUrl),
+  };
 };
 
 export const deletePdfFile = async (storagePath: string) => {
@@ -106,7 +126,7 @@ export const loadAppState = async (): Promise<{
     isStarred: record.isStarred,
     isRead: record.isRead,
     color: record.color,
-    fileUrl: `/${record.storagePath}`,
+    fileUrl: resolveFileUrl(`/${record.storagePath}`),
     storagePath: record.storagePath,
   }));
   return {
