@@ -28,6 +28,7 @@ export default function App() {
   const [lang, setLang] = useState<Language>('DE'); // Default German
   const [isStorageReady, setIsStorageReady] = useState(false);
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [previewDefaultEnabled, setPreviewDefaultEnabled] = useState(false);
 
   useEffect(() => {
     const storedLang = window.localStorage.getItem('language');
@@ -48,8 +49,21 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const storedPreviewDefault = window.localStorage.getItem('pdfPreviewDefault');
+    if (storedPreviewDefault === 'on') {
+      setPreviewDefaultEnabled(true);
+    } else if (storedPreviewDefault === 'off') {
+      setPreviewDefaultEnabled(false);
+    }
+  }, []);
+
+  useEffect(() => {
     window.localStorage.setItem('language', lang);
   }, [lang]);
+
+  useEffect(() => {
+    window.localStorage.setItem('pdfPreviewDefault', previewDefaultEnabled ? 'on' : 'off');
+  }, [previewDefaultEnabled]);
 
   useEffect(() => {
     let isMounted = true;
@@ -216,6 +230,8 @@ export default function App() {
             <SettingsScreen 
                 lang={lang}
                 setLang={setLang}
+                previewDefaultEnabled={previewDefaultEnabled}
+                onPreviewDefaultChange={setPreviewDefaultEnabled}
                 categories={categories}
                 onAddTag={handleAddTag}
                 onEditTag={handleEditTag}
@@ -229,6 +245,7 @@ export default function App() {
             file={selectedFile}
             lang={lang}
             categories={categories}
+            previewDefaultEnabled={previewDefaultEnabled}
             onBack={() => setCurrentScreen('dashboard')} 
             onExport={() => setCurrentScreen('export')}
             onDelete={() => handleDelete(selectedFile.id)}

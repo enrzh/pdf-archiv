@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, FileText, Star, PenLine, X, Check, Calendar, Tag, Share, Eye, EyeOff, Download, Monitor, MonitorOff } from 'lucide-react';
 import { Category, FileItem, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
@@ -12,14 +12,19 @@ interface ViewerScreenProps {
     onToggleRead: (id: string) => void;
     lang: Language;
     categories: Category[];
+    previewDefaultEnabled: boolean;
 }
 
-export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExport, onDelete, onToggleStar, onToggleRead, lang, categories }) => {
+export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExport, onDelete, onToggleStar, onToggleRead, lang, categories, previewDefaultEnabled }) => {
     const t = TRANSLATIONS[lang].viewer;
     const [isEditing, setIsEditing] = useState(false);
     const [editDate, setEditDate] = useState(file.date);
     const [editTags, setEditTags] = useState(file.tags);
-    const [isPreviewEnabled, setIsPreviewEnabled] = useState(true);
+    const [isPreviewEnabled, setIsPreviewEnabled] = useState(previewDefaultEnabled);
+
+    useEffect(() => {
+        setIsPreviewEnabled(previewDefaultEnabled);
+    }, [previewDefaultEnabled, file.id]);
 
     // Toggle Edit Modal
     const toggleEdit = () => {
@@ -69,7 +74,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-gray-400 text-center px-6">
                         <FileText size={64} />
-                        <p className="mt-4 text-lg font-semibold text-gray-200">{file.name}</p>
+                        <p className="mt-4 text-lg font-semibold text-gray-200 max-w-xs break-words">{file.name}</p>
                         {!file.fileUrl && <p className="mt-2 text-sm text-gray-500">{t.pdfError}</p>}
                     </div>
                 )}
@@ -78,7 +83,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
             {/* Top Left: Back Bubble */}
             <button 
                 onClick={onBack} 
-                className="absolute top-6 left-6 z-20 size-12 rounded-full bg-surface/90 backdrop-blur-md flex items-center justify-center text-white/90 shadow-glow ring-1 ring-white/10 active:scale-95 transition-all hover:bg-surface hover:ring-primary/40"
+                className="absolute top-6 left-6 z-20 size-12 rounded-full bg-black flex items-center justify-center text-white shadow-glow ring-1 ring-white/10 active:scale-95 transition-all hover:bg-gray-900"
             >
                 <ChevronLeft size={24} strokeWidth={2.5} />
             </button>
@@ -88,7 +93,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                  {/* Star Bubble */}
                 <button 
                     onClick={() => onToggleStar(file.id)}
-                    className={`size-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 ${file.isStarred ? 'bg-yellow-500/90 text-black ring-yellow-200/60' : 'bg-surface/90 text-white/90 hover:bg-surface hover:ring-primary/40'}`}
+                    className="size-12 rounded-full bg-black flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 text-white hover:bg-gray-900"
                 >
                     <Star size={22} fill={file.isStarred ? "currentColor" : "none"} strokeWidth={file.isStarred ? 0 : 2.5} />
                 </button>
@@ -96,7 +101,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                  {/* Preview Toggle Bubble */}
                 <button 
                     onClick={() => setIsPreviewEnabled((prev) => !prev)}
-                    className={`size-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 ${isPreviewEnabled ? 'bg-surface/90 text-white/90 hover:bg-surface hover:ring-primary/40' : 'bg-gray-500/80 text-white ring-white/20'}`}
+                    className="size-12 rounded-full bg-black flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 text-white hover:bg-gray-900"
                     aria-label={isPreviewEnabled ? t.previewOff : t.previewOn}
                 >
                     {isPreviewEnabled ? (
@@ -109,7 +114,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                  {/* Read Toggle Bubble */}
                 <button 
                     onClick={() => onToggleRead(file.id)}
-                    className={`size-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 ${!file.isRead ? 'bg-blue-500/90 text-white ring-blue-200/60' : 'bg-surface/90 text-white/90 hover:bg-surface hover:ring-primary/40'}`}
+                    className="size-12 rounded-full bg-black flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 text-white hover:bg-gray-900"
                 >
                     {file.isRead ? (
                          <EyeOff size={22} strokeWidth={2.5} />
@@ -121,7 +126,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                 {/* Export Bubble */}
                 <button 
                     onClick={onExport}
-                    className="size-12 rounded-full bg-surface/90 backdrop-blur-md flex items-center justify-center text-white/90 shadow-glow ring-1 ring-white/10 active:scale-95 transition-all hover:bg-surface hover:ring-primary/40"
+                    className="size-12 rounded-full bg-black flex items-center justify-center text-white shadow-glow ring-1 ring-white/10 active:scale-95 transition-all hover:bg-gray-900"
                 >
                     <Share size={22} strokeWidth={2.5} />
                 </button>
@@ -129,7 +134,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                 {/* Download Bubble */}
                 <button 
                     onClick={handleDownload}
-                    className={`size-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 ${file.fileUrl ? 'bg-surface/90 text-white/90 hover:bg-surface hover:ring-primary/40' : 'bg-gray-700/70 text-gray-300 cursor-not-allowed ring-white/5'}`}
+                    className={`size-12 rounded-full flex items-center justify-center transition-all shadow-glow ring-1 ring-white/10 active:scale-95 ${file.fileUrl ? 'bg-black text-white hover:bg-gray-900' : 'bg-black/60 text-white/50 cursor-not-allowed ring-white/5'}`}
                     disabled={!file.fileUrl}
                     aria-label={t.download}
                 >
@@ -141,7 +146,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
             {/* Bottom Right: Edit Bubble */}
             <button 
                 onClick={() => setIsEditing(true)}
-                className="absolute bottom-8 right-6 z-20 size-14 rounded-[20px] bg-primary text-black shadow-glow ring-1 ring-primary/40 flex items-center justify-center active:scale-95 transition-transform hover:brightness-110 hover:shadow-primary/40"
+                className="absolute bottom-8 right-6 z-20 size-14 rounded-[20px] bg-black text-white shadow-glow ring-1 ring-white/20 flex items-center justify-center active:scale-95 transition-transform hover:bg-gray-900"
             >
                 <PenLine size={26} strokeWidth={2.5} />
             </button>

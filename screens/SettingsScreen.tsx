@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Moon, Sun, Globe, Tag, Plus, Edit2, Trash2, X, Check } from 'lucide-react';
+import { Settings, Moon, Sun, Globe, Tag, Plus, Edit2, Trash2, X, Check, Monitor, MonitorOff } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Category, ScreenName, Language } from '../types';
@@ -9,6 +9,8 @@ interface SettingsScreenProps {
     onNavigate: (screen: ScreenName) => void;
     lang: Language;
     setLang: (lang: Language) => void;
+    previewDefaultEnabled: boolean;
+    onPreviewDefaultChange: (enabled: boolean) => void;
     categories: Category[];
     onAddTag: (category: Category) => void;
     onEditTag: (oldTag: string, category: Category) => void;
@@ -19,6 +21,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     onNavigate, 
     lang, 
     setLang, 
+    previewDefaultEnabled,
+    onPreviewDefaultChange,
     categories, 
     onAddTag, 
     onEditTag, 
@@ -62,6 +66,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     const handleLanguageChange = (language: Language) => {
         setLang(language);
         window.localStorage.setItem('language', language);
+    };
+
+    const handlePreviewDefaultToggle = () => {
+        onPreviewDefaultChange(!previewDefaultEnabled);
     };
 
     const handleSaveNewTag = () => {
@@ -115,6 +123,28 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         {/* Toggle Switch UI */}
                         <div className={`w-12 h-7 rounded-full p-1 transition-colors duration-300 ${isDark ? 'bg-primary' : 'bg-gray-400'}`}>
                             <div className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${isDark ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                        </div>
+                    </button>
+                 </div>
+
+                 {/* PDF Preview Default Card */}
+                 <div className="bg-surface rounded-2xl overflow-hidden shadow-sm">
+                    <button 
+                        onClick={handlePreviewDefaultToggle}
+                        className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-xl bg-gray-500/10 text-gray-300 flex items-center justify-center transition-colors">
+                                {previewDefaultEnabled ? <Monitor size={20} /> : <MonitorOff size={20} />}
+                            </div>
+                            <div className="text-left">
+                                <p className="text-sm font-bold text-white">{t.previewDefault}</p>
+                                <p className="text-[10px] text-gray-500">{t.previewDefaultSub}</p>
+                            </div>
+                        </div>
+                        
+                        <div className={`w-12 h-7 rounded-full p-1 transition-colors duration-300 ${previewDefaultEnabled ? 'bg-primary' : 'bg-gray-400'}`}>
+                            <div className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${previewDefaultEnabled ? 'translate-x-5' : 'translate-x-0'}`}></div>
                         </div>
                     </button>
                  </div>
