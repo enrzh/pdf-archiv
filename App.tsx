@@ -7,22 +7,50 @@ import { FoldersScreen } from './screens/FoldersScreen';
 import { StarredScreen } from './screens/StarredScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { ScreenName, FileItem, Language } from './types';
+import { deletePdfFile, loadAppState, saveAppState, savePdfFile } from './storage';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenName>('dashboard');
   const [files, setFiles] = useState<FileItem[]>([]);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>('DE'); // Default German
+  const [isStorageReady, setIsStorageReady] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([
     'Rechnung', 'Vertrag', 'Steuer', 'Wichtig', 'Sonstiges', 'Privat', 'Arbeit'
   ]);
 
-  // Initialize with some dummy data if empty (optional, for demo purposes)
   useEffect(() => {
-    if (files.length === 0) {
-      // You could load from localStorage here
+    const storedLang = window.localStorage.getItem('language');
+    if (storedLang === 'EN' || storedLang === 'DE' || storedLang === 'CN') {
+      setLang(storedLang as Language);
     }
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem('language', lang);
+  }, [lang]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadState = async () => {
+      const storedState = await loadAppState();
+      if (!isMounted) return;
+      if (storedState) {
+        setFiles(storedState.files);
+        setAvailableTags(storedState.availableTags);
+      }
+      setIsStorageReady(true);
+    };
+    void loadState();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isStorageReady) return;
+    void saveAppState(files, availableTags);
+  }, [files, availableTags, isStorageReady]);
 
   const generateId = () => {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -31,27 +59,37 @@ export default function App() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
 
-  const handleArchive = (filesData: { file: File, size: string }[], archiveDate: Date, tags: string[]) => {
-    const newFiles: FileItem[] = filesData.map(data => ({
-      id: generateId(),
-      name: data.file.name,
-      size: data.size,
-      date: archiveDate,
-      uploadedAt: new Date(),
-      type: 'pdf',
-      tags: tags,
-      color: 'text-primary bg-primary/20', // Updated to use theme variable
-      fileUrl: URL.createObjectURL(data.file),
-      isSigned: false,
-      isStarred: false,
-      isRead: false, // Default is Unread (ungelesen)
-    }));
+  const handleArchive = async (filesData: { file: File, size: string }[], archiveDate: Date, tags: string[]) => {
+    const newFiles: FileItem[] = [];
+    for (const data of filesData) {
+      const id = generateId();
+      const uploadResult = await savePdfFile(id, data.file);
+      newFiles.push({
+        id,
+        name: data.file.name,
+        size: data.size,
+        date: archiveDate,
+        uploadedAt: new Date(),
+        type: 'pdf',
+        tags: tags,
+        color: 'text-primary bg-primary/20', // Updated to use theme variable
+        fileUrl: uploadResult.fileUrl,
+        isSigned: false,
+        isStarred: false,
+        isRead: false, // Default is Unread (ungelesen)
+        storagePath: uploadResult.storagePath,
+      });
+    }
 
     setFiles(prev => [...newFiles, ...prev]);
     setCurrentScreen('dashboard');
   };
 
   const handleDelete = (id: string) => {
+    const fileToDelete = files.find(file => file.id === id);
+    if (fileToDelete?.storagePath) {
+      void deletePdfFile(fileToDelete.storagePath);
+    }
     setFiles(prev => prev.filter(f => f.id !== id));
     if (selectedFileId === id) {
       setSelectedFileId(null);

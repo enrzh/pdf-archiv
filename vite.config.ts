@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => {
         port: 9001,
         host: '0.0.0.0',
         allowedHosts: ["nas"],
+        proxy: {
+          '/api': 'http://localhost:3001',
+          '/data': 'http://localhost:3001',
+        },
       },
       plugins: [react()],
       define: {
