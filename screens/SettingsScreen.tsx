@@ -30,6 +30,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     const t = TRANSLATIONS[lang].settings;
 
     useEffect(() => {
+        const storedTheme = window.localStorage.getItem('theme');
+        if (storedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+            setIsDark(false);
+            return;
+        }
+        if (storedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            setIsDark(true);
+            return;
+        }
         // Check initial state from DOM
         setIsDark(document.documentElement.classList.contains('dark'));
     }, []);
@@ -37,6 +48,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     const toggleTheme = () => {
         const newIsDark = !isDark;
         setIsDark(newIsDark);
+        window.localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
         if (newIsDark) {
             document.documentElement.classList.add('dark');
         } else {
