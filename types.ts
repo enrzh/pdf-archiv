@@ -14,6 +14,7 @@ export interface FileItem {
     isRead: boolean; // New property for Read/Unread status
     color: string;
     fileUrl: string; // Blob URL for the PDF
+    storagePath?: string; // Local filesystem path in data folder
 }
 
 export interface CalendarDay {
