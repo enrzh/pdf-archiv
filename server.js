@@ -41,9 +41,15 @@ const writeDb = async (payload) => {
 app.use(express.json());
 app.use('/data', express.static(DATA_DIR));
 
+void ensureDir(path.join(DATA_DIR, 'tmp'));
+
 app.get('/api/state', async (_req, res) => {
-  const data = await readDb();
-  res.json(data);
+  try {
+    const data = await readDb();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to read state' });
+  }
 });
 
 app.post('/api/state', async (req, res) => {
