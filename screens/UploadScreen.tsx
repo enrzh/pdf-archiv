@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ChevronLeft, CloudUpload, RefreshCw, Trash2, ChevronRight, CheckCircle, Info, Receipt, Plus, FileText, Zap, Loader2, X, Paperclip } from 'lucide-react';
-import { Language } from '../types';
+import { Category, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 import { PopupNotice } from '../components/PopupNotice';
 
@@ -8,7 +8,7 @@ interface UploadScreenProps {
     onBack: () => void;
     onArchive: (files: { file: File, size: string }[], date: Date, tags: string[]) => void | Promise<void>;
     lang: Language;
-    availableTags: string[];
+    categories: Category[];
 }
 
 interface UploadFileState {
@@ -19,7 +19,7 @@ interface UploadFileState {
     isCompressed: boolean;
 }
 
-export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, lang, availableTags }) => {
+export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, lang, categories }) => {
     const t = TRANSLATIONS[lang].upload;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploadedFiles, setUploadedFiles] = useState<UploadFileState[]>([]);
@@ -315,17 +315,18 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
                     <div>
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">{t.categories}</h3>
                         <div className="flex flex-wrap gap-2">
-                            {availableTags.map(tag => (
+                            {categories.map((category) => (
                                 <button 
-                                    key={tag}
-                                    onClick={() => toggleTag(tag)}
+                                    key={category.name}
+                                    onClick={() => toggleTag(category.name)}
                                     className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                                        selectedTags.includes(tag) 
+                                        selectedTags.includes(category.name) 
                                         ? 'bg-primary text-background shadow-lg shadow-primary/20' 
                                         : 'bg-background text-gray-400 hover:bg-white/5'
                                     }`}
                                 >
-                                    {tag}
+                                    <span className="mr-2 inline-block size-2.5 rounded-full align-middle" style={{ backgroundColor: category.color }}></span>
+                                    {category.name}
                                 </button>
                             ))}
                         </div>

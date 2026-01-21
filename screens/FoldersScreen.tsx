@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Folder, ChevronRight, FileText, BadgeCheck, MoreVertical, ChevronLeft, Search } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
-import { FileItem, ScreenName, Language } from '../types';
+import { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
 interface FoldersScreenProps {
@@ -9,10 +9,10 @@ interface FoldersScreenProps {
     onNavigate: (screen: ScreenName) => void;
     onFileSelect: (id: string) => void;
     lang: Language;
-    availableTags: string[];
+    categories: Category[];
 }
 
-export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate, onFileSelect, lang, availableTags }) => {
+export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate, onFileSelect, lang, categories }) => {
     const t = TRANSLATIONS[lang].folders;
     const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
@@ -20,8 +20,8 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
     const folders = useMemo(() => {
         const tagMap = new Map<string, number>();
         
-        // Initialize default folders from availableTags
-        availableTags.forEach(folder => tagMap.set(folder, 0));
+        // Initialize default folders from categories
+        categories.forEach((category) => tagMap.set(category.name, 0));
 
         // Count files per tag
         files.forEach(file => {
@@ -30,14 +30,14 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
                 tagMap.set('Unsorted', count + 1);
             } else {
                 file.tags.forEach(tag => {
-                    // Only count if tag is in availableTags (or 'Unsorted' logic)
-                    // If file has a tag that was deleted from availableTags, you might want to show it or ignore it.
-                    // Here we show it if it exists in the map (which we seeded with availableTags)
+                    // Only count if tag is in categories (or 'Unsorted' logic)
+                    // If file has a tag that was deleted from categories, you might want to show it or ignore it.
+                    // Here we show it if it exists in the map (which we seeded with categories)
                     if (tagMap.has(tag)) {
                          const count = tagMap.get(tag) || 0;
                          tagMap.set(tag, count + 1);
                     } else {
-                        // Optional: Handle tags on files that are no longer in "availableTags"
+                        // Optional: Handle tags on files that are no longer in "categories"
                         // For now, we only show folders for currently available tags
                     }
                 });
@@ -55,7 +55,7 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
             if (a.count === 0 && b.count > 0) return 1;
             return a.name.localeCompare(b.name);
         });
-    }, [files, availableTags]);
+    }, [files, categories]);
 
     const filteredFiles = selectedFolder 
         ? files.filter(f => selectedFolder === 'Unsorted' ? f.tags.length === 0 : f.tags.includes(selectedFolder))

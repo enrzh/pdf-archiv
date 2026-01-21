@@ -6,8 +6,20 @@ import { ExportScreen } from './screens/ExportScreen';
 import { FoldersScreen } from './screens/FoldersScreen';
 import { StarredScreen } from './screens/StarredScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
-import { ScreenName, FileItem, Language } from './types';
+import { Category, ScreenName, FileItem, Language } from './types';
 import { deletePdfFile, loadAppState, saveAppState, savePdfFile } from './storage';
+
+const CATEGORY_COLOR_PALETTE = ['#38bdf8', '#f97316', '#a855f7', '#22c55e', '#f43f5e', '#eab308', '#14b8a6'];
+
+const DEFAULT_CATEGORIES: Category[] = [
+  { name: 'Rechnung', color: '#38bdf8' },
+  { name: 'Vertrag', color: '#f97316' },
+  { name: 'Steuer', color: '#a855f7' },
+  { name: 'Wichtig', color: '#f43f5e' },
+  { name: 'Sonstiges', color: '#eab308' },
+  { name: 'Privat', color: '#14b8a6' },
+  { name: 'Arbeit', color: '#22c55e' },
+];
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenName>('dashboard');
@@ -15,9 +27,7 @@ export default function App() {
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>('DE'); // Default German
   const [isStorageReady, setIsStorageReady] = useState(false);
-  const [availableTags, setAvailableTags] = useState<string[]>([
-    'Rechnung', 'Vertrag', 'Steuer', 'Wichtig', 'Sonstiges', 'Privat', 'Arbeit'
-  ]);
+  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
 
   useEffect(() => {
     const storedLang = window.localStorage.getItem('language');
@@ -48,7 +58,15 @@ export default function App() {
       if (!isMounted) return;
       if (storedState) {
         setFiles(storedState.files);
-        setAvailableTags(storedState.availableTags);
+        if (storedState.categories && storedState.categories.length > 0) {
+          setCategories(storedState.categories);
+        } else if (storedState.availableTags && storedState.availableTags.length > 0) {
+          const upgradedCategories = storedState.availableTags.map((tag, index) => ({
+            name: tag,
+            color: CATEGORY_COLOR_PALETTE[index % CATEGORY_COLOR_PALETTE.length],
+          }));
+          setCategories(upgradedCategories);
+        }
         if (storedState.language) {
           setLang(storedState.language);
         }
@@ -63,8 +81,8 @@ export default function App() {
 
   useEffect(() => {
     if (!isStorageReady) return;
-    void saveAppState(files, availableTags, lang);
-  }, [files, availableTags, isStorageReady, lang]);
+    void saveAppState(files, categories, lang);
+  }, [files, categories, isStorageReady, lang]);
 
   const generateId = () => {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -125,30 +143,35 @@ export default function App() {
   };
 
   // Tag Management Handlers
-  const handleAddTag = (tag: string) => {
-    if (tag && !availableTags.includes(tag)) {
-        setAvailableTags(prev => [...prev, tag]);
+  const handleAddTag = (category: Category) => {
+    if (!category.name || categories.some((item) => item.name === category.name)) return;
+    setCategories((prev) => [...prev, category]);
+  };
+
+  const handleEditTag = (oldTag: string, updatedCategory: Category) => {
+    if (!updatedCategory.name) return;
+    if (oldTag !== updatedCategory.name && categories.some((item) => item.name === updatedCategory.name)) return;
+
+    setCategories((prev) =>
+      prev.map((item) => (item.name === oldTag ? updatedCategory : item)),
+    );
+
+    if (oldTag !== updatedCategory.name) {
+      setFiles((prev) =>
+        prev.map((file) => ({
+          ...file,
+          tags: file.tags.map((tag) => (tag === oldTag ? updatedCategory.name : tag)),
+        })),
+      );
     }
   };
 
-  const handleEditTag = (oldTag: string, newTag: string) => {
-      if (!newTag || availableTags.includes(newTag)) return;
-      
-      setAvailableTags(prev => prev.map(t => t === oldTag ? newTag : t));
-      
-      // Update files that have this tag
-      setFiles(prev => prev.map(f => ({
-          ...f,
-          tags: f.tags.map(t => t === oldTag ? newTag : t)
-      })));
-  };
-
   const handleDeleteTag = (tag: string) => {
-      setAvailableTags(prev => prev.filter(t => t !== tag));
-      // Optional: Remove tag from files? 
-      // For now, let's keep it on files (historical data), just remove from available list for new adds.
-      // If you want to remove from files:
-      // setFiles(prev => prev.map(f => ({ ...f, tags: f.tags.filter(t => t !== tag) })));
+    setCategories((prev) => prev.filter((item) => item.name !== tag));
+    // Optional: Remove tag from files? 
+    // For now, let's keep it on files (historical data), just remove from available list for new adds.
+    // If you want to remove from files:
+    // setFiles(prev => prev.map(f => ({ ...f, tags: f.tags.filter(t => t !== tag) })));
   };
 
 
@@ -161,7 +184,7 @@ export default function App() {
           <DashboardScreen 
             files={files}
             lang={lang}
-            availableTags={availableTags}
+            categories={categories}
             onNavigate={(screen) => setCurrentScreen(screen)} 
             onFileSelect={handleNavigateToViewer}
             onExport={() => setCurrentScreen('export')}
@@ -174,7 +197,7 @@ export default function App() {
             <FoldersScreen 
                 files={files}
                 lang={lang}
-                availableTags={availableTags}
+                categories={categories}
                 onNavigate={(screen) => setCurrentScreen(screen)}
                 onFileSelect={handleNavigateToViewer}
             />
@@ -193,7 +216,7 @@ export default function App() {
             <SettingsScreen 
                 lang={lang}
                 setLang={setLang}
-                availableTags={availableTags}
+                categories={categories}
                 onAddTag={handleAddTag}
                 onEditTag={handleEditTag}
                 onDeleteTag={handleDeleteTag}
@@ -205,19 +228,19 @@ export default function App() {
           <ViewerScreen 
             file={selectedFile}
             lang={lang}
-            availableTags={availableTags}
+            categories={categories}
             onBack={() => setCurrentScreen('dashboard')} 
             onExport={() => setCurrentScreen('export')}
             onDelete={() => handleDelete(selectedFile.id)}
             onToggleStar={handleToggleStar}
             onToggleRead={handleToggleRead}
           />
-        ) : <DashboardScreen files={files} lang={lang} availableTags={availableTags} onNavigate={setCurrentScreen} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
+        ) : <DashboardScreen files={files} lang={lang} categories={categories} onNavigate={setCurrentScreen} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
       case 'upload':
         return (
           <UploadScreen 
             lang={lang}
-            availableTags={availableTags}
+            categories={categories}
             onBack={() => setCurrentScreen('dashboard')} 
             onArchive={handleArchive}
           />
@@ -235,7 +258,7 @@ export default function App() {
             />
         );
       default:
-        return <DashboardScreen files={files} lang={lang} availableTags={availableTags} onNavigate={(screen) => setCurrentScreen(screen)} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
+        return <DashboardScreen files={files} lang={lang} categories={categories} onNavigate={(screen) => setCurrentScreen(screen)} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
     }
   };
 

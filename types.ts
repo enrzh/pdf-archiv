@@ -1,6 +1,11 @@
 export type ScreenName = 'dashboard' | 'viewer' | 'upload' | 'export' | 'folders' | 'starred' | 'settings';
 export type Language = 'EN' | 'DE' | 'CN';
 
+export interface Category {
+    name: string;
+    color: string;
+}
+
 export interface FileItem {
     id: string;
     name: string;
