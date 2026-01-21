@@ -3,6 +3,7 @@ import { ChevronLeft, FileText, Printer, StickyNote, Info } from 'lucide-react';
 import { FileItem, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 import { PopupNotice } from '../components/PopupNotice';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 interface ExportScreenProps {
     files: FileItem[];
@@ -14,17 +15,14 @@ export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang 
     const t = TRANSLATIONS[lang].export;
     const filesInRange = files;
     const [popupMessage, setPopupMessage] = useState<string | null>(null);
+    const [isConfirmingPrint, setIsConfirmingPrint] = useState(false);
 
     const handlePrint = () => {
         if (filesInRange.length === 0) {
             setPopupMessage('No files to export.');
             return;
         }
-        // Simulate print
-        const confirmMsg = `Prepare print for ${filesInRange.length} documents?\n\n${filesInRange.map(f => `- ${f.name}`).join('\n')}`;
-        if(window.confirm(confirmMsg)) {
-             window.print();
-        }
+        setIsConfirmingPrint(true);
     };
 
     return (
@@ -107,6 +105,35 @@ export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang 
                     </button>
                 </div>
             </div>
+
+            {isConfirmingPrint && (
+                <ConfirmDialog
+                    title={t.confirmPrintTitle}
+                    message={
+                        <div>
+                            <p className="font-medium text-gray-200">
+                                {t.confirmPrintIntro.replace('{count}', String(filesInRange.length))}
+                            </p>
+                            <ul className="mt-3 space-y-1 text-xs text-gray-400 max-h-40 overflow-y-auto pr-1">
+                                {filesInRange.map((file) => (
+                                    <li key={file.id} className="flex items-start gap-2">
+                                        <span className="mt-1 size-1.5 rounded-full bg-gray-500"></span>
+                                        <span className="leading-relaxed">{file.name}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    }
+                    confirmLabel={t.printPdf}
+                    cancelLabel={t.cancel}
+                    tone="primary"
+                    onCancel={() => setIsConfirmingPrint(false)}
+                    onConfirm={() => {
+                        setIsConfirmingPrint(false);
+                        window.print();
+                    }}
+                />
+            )}
         </div>
     );
 };
