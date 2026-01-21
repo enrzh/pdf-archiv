@@ -49,6 +49,9 @@ export default function App() {
       if (storedState) {
         setFiles(storedState.files);
         setAvailableTags(storedState.availableTags);
+        if (storedState.language) {
+          setLang(storedState.language);
+        }
       }
       setIsStorageReady(true);
     };
@@ -60,8 +63,8 @@ export default function App() {
 
   useEffect(() => {
     if (!isStorageReady) return;
-    void saveAppState(files, availableTags);
-  }, [files, availableTags, isStorageReady]);
+    void saveAppState(files, availableTags, lang);
+  }, [files, availableTags, isStorageReady, lang]);
 
   const generateId = () => {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
