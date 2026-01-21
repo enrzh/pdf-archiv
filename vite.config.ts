@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
         host: '0.0.0.0',
         allowedHosts: ["nas"],
         proxy: {
-          '/api': 'http://localhost:3001',
-          '/data': 'http://localhost:3001',
+          '/api': 'http://localhost:9002',
+          '/data': 'http://localhost:9002',
         },
       },
       plugins: [react()],

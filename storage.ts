@@ -1,6 +1,11 @@
 import { FileItem } from './types';
 
-const API_BASE = '/api';
+const getApiBase = () => {
+  if (typeof window === 'undefined') {
+    return 'http://localhost:9002/api';
+  }
+  return `http://${window.location.hostname}:9002/api`;
+};
 const STORAGE_VERSION = 1;
 
 type StoredFileRecord = {
@@ -35,7 +40,7 @@ export const savePdfFile = async (id: string, file: File, folder = 'pdfs') => {
   formData.append('file', file);
   formData.append('id', id);
   formData.append('folder', folder);
-  const response = await fetch(`${API_BASE}/pdfs`, {
+  const response = await fetch(`${getApiBase()}/pdfs`, {
     method: 'POST',
     body: formData,
   });
@@ -47,7 +52,7 @@ export const savePdfFile = async (id: string, file: File, folder = 'pdfs') => {
 };
 
 export const deletePdfFile = async (storagePath: string) => {
-  await fetch(`${API_BASE}/pdfs/delete`, {
+  await fetch(`${getApiBase()}/pdfs/delete`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ storagePath }),
@@ -75,7 +80,7 @@ export const saveAppState = async (files: FileItem[], availableTags: string[]) =
     availableTags,
     files: storedFiles,
   };
-  await fetch(`${API_BASE}/state`, {
+  await fetch(`${getApiBase()}/state`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -86,7 +91,7 @@ export const loadAppState = async (): Promise<{
   files: FileItem[];
   availableTags: string[];
 } | null> => {
-  const response = await fetch(`${API_BASE}/state`);
+  const response = await fetch(`${getApiBase()}/state`);
   if (!response.ok) return null;
   const stored = (await response.json()) as StoredState;
   const files: FileItem[] = (stored.files ?? []).map((record) => ({
