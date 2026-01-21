@@ -63,7 +63,7 @@ export default function App() {
     const newFiles: FileItem[] = [];
     for (const data of filesData) {
       const id = generateId();
-      const storagePath = await savePdfFile(id, data.file);
+      const uploadResult = await savePdfFile(id, data.file);
       newFiles.push({
         id,
         name: data.file.name,
@@ -73,11 +73,11 @@ export default function App() {
         type: 'pdf',
         tags: tags,
         color: 'text-primary bg-primary/20', // Updated to use theme variable
-        fileUrl: URL.createObjectURL(data.file),
+        fileUrl: uploadResult.fileUrl,
         isSigned: false,
         isStarred: false,
         isRead: false, // Default is Unread (ungelesen)
-        storagePath,
+        storagePath: uploadResult.storagePath,
       });
     }
 

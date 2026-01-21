@@ -1,8 +1,6 @@
 import { FileItem } from './types';
 
-const DATA_DIR = 'data';
-const PDF_DIR = 'pdfs';
-const DB_FILE = 'db.sqlite.json';
+const API_BASE = '/api';
 const STORAGE_VERSION = 1;
 
 type StoredFileRecord = {
@@ -27,66 +25,36 @@ type StoredState = {
   files: StoredFileRecord[];
 };
 
-const supportsFileSystem = () =>
-  typeof navigator !== 'undefined' &&
-  'storage' in navigator &&
-  typeof navigator.storage.getDirectory === 'function';
-
-const getDataDir = async () => {
-  const root = await navigator.storage.getDirectory();
-  const dataDir = await root.getDirectoryHandle(DATA_DIR, { create: true });
-  await dataDir.getDirectoryHandle(PDF_DIR, { create: true });
-  return dataDir;
+type PdfUploadResponse = {
+  storagePath: string;
+  fileUrl: string;
 };
 
-const writeJsonFile = async (data: StoredState) => {
-  const dataDir = await getDataDir();
-  const handle = await dataDir.getFileHandle(DB_FILE, { create: true });
-  const writable = await handle.createWritable();
-  await writable.write(JSON.stringify(data, null, 2));
-  await writable.close();
-};
-
-const readJsonFile = async (): Promise<StoredState | null> => {
-  const dataDir = await getDataDir();
-  try {
-    const handle = await dataDir.getFileHandle(DB_FILE, { create: false });
-    const file = await handle.getFile();
-    const text = await file.text();
-    return JSON.parse(text) as StoredState;
-  } catch (error) {
-    return null;
+export const savePdfFile = async (id: string, file: File, folder = 'pdfs') => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('id', id);
+  formData.append('folder', folder);
+  const response = await fetch(`${API_BASE}/pdfs`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error('Failed to save PDF');
   }
-};
-
-const getPdfDir = async () => {
-  const dataDir = await getDataDir();
-  return dataDir.getDirectoryHandle(PDF_DIR, { create: true });
-};
-
-export const savePdfFile = async (id: string, file: File) => {
-  if (!supportsFileSystem()) return `${id}.pdf`;
-  const pdfDir = await getPdfDir();
-  const fileName = `${id}.pdf`;
-  const handle = await pdfDir.getFileHandle(fileName, { create: true });
-  const writable = await handle.createWritable();
-  await writable.write(file);
-  await writable.close();
-  return fileName;
+  const data = (await response.json()) as PdfUploadResponse;
+  return data;
 };
 
 export const deletePdfFile = async (storagePath: string) => {
-  if (!supportsFileSystem()) return;
-  const pdfDir = await getPdfDir();
-  try {
-    await pdfDir.removeEntry(storagePath);
-  } catch (error) {
-    return;
-  }
+  await fetch(`${API_BASE}/pdfs/delete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ storagePath }),
+  });
 };
 
 export const saveAppState = async (files: FileItem[], availableTags: string[]) => {
-  if (!supportsFileSystem()) return;
   const storedFiles: StoredFileRecord[] = files.map((file) => ({
     id: file.id,
     name: file.name,
@@ -99,7 +67,7 @@ export const saveAppState = async (files: FileItem[], availableTags: string[]) =
     isStarred: file.isStarred,
     isRead: file.isRead,
     color: file.color,
-    storagePath: file.storagePath ?? `${file.id}.pdf`,
+    storagePath: file.storagePath ?? `data/pdfs/${file.id}.pdf`,
   }));
   const payload: StoredState = {
     version: STORAGE_VERSION,
@@ -107,42 +75,35 @@ export const saveAppState = async (files: FileItem[], availableTags: string[]) =
     availableTags,
     files: storedFiles,
   };
-  await writeJsonFile(payload);
+  await fetch(`${API_BASE}/state`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 };
 
 export const loadAppState = async (): Promise<{
   files: FileItem[];
   availableTags: string[];
 } | null> => {
-  if (!supportsFileSystem()) return null;
-  const stored = await readJsonFile();
-  if (!stored) return null;
-  const pdfDir = await getPdfDir();
-  const files: FileItem[] = [];
-  for (const record of stored.files ?? []) {
-    try {
-      const fileHandle = await pdfDir.getFileHandle(record.storagePath, { create: false });
-      const fileBlob = await fileHandle.getFile();
-      const fileUrl = URL.createObjectURL(fileBlob);
-      files.push({
-        id: record.id,
-        name: record.name,
-        size: record.size,
-        date: new Date(record.date),
-        uploadedAt: new Date(record.uploadedAt),
-        type: record.type,
-        tags: record.tags,
-        isSigned: record.isSigned,
-        isStarred: record.isStarred,
-        isRead: record.isRead,
-        color: record.color,
-        fileUrl,
-        storagePath: record.storagePath,
-      });
-    } catch (error) {
-      continue;
-    }
-  }
+  const response = await fetch(`${API_BASE}/state`);
+  if (!response.ok) return null;
+  const stored = (await response.json()) as StoredState;
+  const files: FileItem[] = (stored.files ?? []).map((record) => ({
+    id: record.id,
+    name: record.name,
+    size: record.size,
+    date: new Date(record.date),
+    uploadedAt: new Date(record.uploadedAt),
+    type: record.type,
+    tags: record.tags,
+    isSigned: record.isSigned,
+    isStarred: record.isStarred,
+    isRead: record.isRead,
+    color: record.color,
+    fileUrl: `/${record.storagePath}`,
+    storagePath: record.storagePath,
+  }));
   return {
     files,
     availableTags: stored.availableTags ?? [],
