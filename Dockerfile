@@ -8,4 +8,4 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 EXPOSE 9001
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm run dev:all"]
