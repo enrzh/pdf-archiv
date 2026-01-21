@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, FileText, Star, PenLine, X, Check, Calendar, Tag, Share, Eye, EyeOff } from 'lucide-react';
+import { ChevronLeft, FileText, Star, PenLine, X, Check, Calendar, Tag, Share, Eye, EyeOff, Download, Monitor, MonitorOff } from 'lucide-react';
 import { FileItem, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -19,6 +19,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
     const [isEditing, setIsEditing] = useState(false);
     const [editDate, setEditDate] = useState(file.date);
     const [editTags, setEditTags] = useState(file.tags);
+    const [isPreviewEnabled, setIsPreviewEnabled] = useState(true);
 
     // Toggle Edit Modal
     const toggleEdit = () => {
@@ -38,21 +39,38 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
         }
     };
 
+    const handleDownload = () => {
+        if (!file.fileUrl) {
+            return;
+        }
+        const link = document.createElement('a');
+        link.href = file.fileUrl;
+        link.download = file.name || 'document.pdf';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    };
+
+    const shouldShowPreview = Boolean(file.fileUrl) && isPreviewEnabled;
+
     return (
         <div className="h-screen bg-background flex flex-col text-white animate-fade-in relative overflow-hidden transition-colors duration-300">
             
             {/* Main Content (Full Screen PDF) */}
             <main className="absolute inset-0 z-0 bg-background flex items-center justify-center">
-                {file.fileUrl ? (
+                {shouldShowPreview ? (
                      <iframe 
-                        src={`${file.fileUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} 
-                        className="w-full h-full border-none" 
-                        title="PDF Viewer"
+                        src={`${file.fileUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`} 
+                        className="w-full h-full border-none bg-black"
+                        title={file.name}
+                        allow="fullscreen"
                     />
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400 text-center px-6">
                         <FileText size={64} />
-                        <p className="mt-4">{t.pdfError}</p>
+                        <p className="mt-4 text-lg font-semibold text-gray-200">{file.name}</p>
+                        {!file.fileUrl && <p className="mt-2 text-sm text-gray-500">{t.pdfError}</p>}
                     </div>
                 )}
             </main>
@@ -75,6 +93,19 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                     <Star size={22} fill={file.isStarred ? "currentColor" : "none"} strokeWidth={file.isStarred ? 0 : 2.5} />
                 </button>
 
+                 {/* Preview Toggle Bubble */}
+                <button 
+                    onClick={() => setIsPreviewEnabled((prev) => !prev)}
+                    className={`size-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all shadow-lg active:scale-95 ${isPreviewEnabled ? 'bg-surface/80 text-white/90 hover:bg-surface' : 'bg-gray-500/80 text-white'}`}
+                    aria-label={isPreviewEnabled ? t.previewOff : t.previewOn}
+                >
+                    {isPreviewEnabled ? (
+                        <Monitor size={22} strokeWidth={2.5} />
+                    ) : (
+                        <MonitorOff size={22} strokeWidth={2.5} />
+                    )}
+                </button>
+
                  {/* Read Toggle Bubble */}
                 <button 
                     onClick={() => onToggleRead(file.id)}
@@ -93,6 +124,16 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                     className="size-12 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center text-white/90 shadow-lg active:scale-95 transition-all hover:bg-surface"
                 >
                     <Share size={22} strokeWidth={2.5} />
+                </button>
+
+                {/* Download Bubble */}
+                <button 
+                    onClick={handleDownload}
+                    className={`size-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all shadow-lg active:scale-95 ${file.fileUrl ? 'bg-surface/80 text-white/90 hover:bg-surface' : 'bg-gray-700/60 text-gray-400 cursor-not-allowed'}`}
+                    disabled={!file.fileUrl}
+                    aria-label={t.download}
+                >
+                    <Download size={22} strokeWidth={2.5} />
                 </button>
             </div>
 
