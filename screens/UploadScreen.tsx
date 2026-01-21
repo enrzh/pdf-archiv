@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { ChevronLeft, CloudUpload, RefreshCw, Trash2, ChevronRight, CheckCircle, Info, Receipt, Plus, FileText, Zap, Loader2, X, Paperclip } from 'lucide-react';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../translations';
+import { PopupNotice } from '../components/PopupNotice';
 
 interface UploadScreenProps {
     onBack: () => void;
@@ -24,6 +25,7 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
     const [uploadedFiles, setUploadedFiles] = useState<UploadFileState[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [popupMessage, setPopupMessage] = useState<string | null>(null);
     
     // Calendar logic
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -56,7 +58,7 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
                 }));
 
             if (newFiles.length === 0) {
-                alert('Please upload PDF files only.');
+                setPopupMessage('Please upload PDF files only.');
                 return;
             }
 
@@ -83,7 +85,7 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
 
     const handleArchiveClick = () => {
         if (uploadedFiles.length === 0) {
-            alert("Please select files first.");
+            setPopupMessage('Please select files first.');
             return;
         }
         
@@ -130,6 +132,9 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
 
     return (
         <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-36 overflow-y-auto transition-colors duration-300 relative">
+            {popupMessage && (
+                <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
+            )}
             {/* Floating Back Button */}
             <div className="sticky top-0 z-50 p-6 pointer-events-none flex justify-between items-start">
                 <button 

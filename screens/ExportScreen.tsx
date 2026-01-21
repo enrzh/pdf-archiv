@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, FileText, Printer, StickyNote, Info } from 'lucide-react';
 import { FileItem, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
+import { PopupNotice } from '../components/PopupNotice';
 
 interface ExportScreenProps {
     files: FileItem[];
@@ -12,10 +13,11 @@ interface ExportScreenProps {
 export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang }) => {
     const t = TRANSLATIONS[lang].export;
     const filesInRange = files;
+    const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
     const handlePrint = () => {
         if (filesInRange.length === 0) {
-            alert("No files to export.");
+            setPopupMessage('No files to export.');
             return;
         }
         // Simulate print
@@ -27,6 +29,9 @@ export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang 
 
     return (
         <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-40 overflow-y-auto transition-colors duration-300 relative">
+            {popupMessage && (
+                <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
+            )}
             {/* Floating Back Button */}
             <div className="sticky top-0 z-50 p-6 pointer-events-none">
                 <button 
