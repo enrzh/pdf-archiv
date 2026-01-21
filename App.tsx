@@ -27,6 +27,17 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const storedTheme = window.localStorage.getItem('theme');
+    if (storedTheme === 'light') {
+      document.documentElement.classList.remove('dark');
+      return;
+    }
+    if (storedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  useEffect(() => {
     window.localStorage.setItem('language', lang);
   }, [lang]);
 
