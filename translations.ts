@@ -84,7 +84,13 @@ export const TRANSLATIONS = {
       categories: 'categories',
       empty: 'This folder is empty.',
       unsorted: 'Unsorted',
-      updatedRecently: 'Updated recently'
+      updatedRecently: 'Updated recently',
+      downloadTitle: 'Download PDFs',
+      downloadHint: 'In range: {count} documents',
+      fromDate: 'From',
+      toDate: 'To',
+      downloadCta: 'Download folder',
+      downloadEmpty: 'No PDFs found in the selected range.'
     },
     starred: {
       title: 'Starred',
@@ -197,7 +203,13 @@ export const TRANSLATIONS = {
       categories: 'Kategorien',
       empty: 'Dieser Ordner ist leer.',
       unsorted: 'Unsortiert',
-      updatedRecently: 'Kürzlich aktualisiert'
+      updatedRecently: 'Kürzlich aktualisiert',
+      downloadTitle: 'PDFs herunterladen',
+      downloadHint: 'Im Zeitraum: {count} Dokumente',
+      fromDate: 'Von',
+      toDate: 'Bis',
+      downloadCta: 'Ordner herunterladen',
+      downloadEmpty: 'Keine PDFs im ausgewählten Zeitraum gefunden.'
     },
     starred: {
       title: 'Favoriten',
@@ -310,7 +322,13 @@ export const TRANSLATIONS = {
       categories: '类别',
       empty: '此文件夹为空。',
       unsorted: '未分类',
-      updatedRecently: '最近更新'
+      updatedRecently: '最近更新',
+      downloadTitle: '下载 PDF',
+      downloadHint: '所选范围：{count} 份文档',
+      fromDate: '开始',
+      toDate: '结束',
+      downloadCta: '下载文件夹',
+      downloadEmpty: '所选范围内没有 PDF。'
     },
     starred: {
       title: '收藏',
