@@ -1,10 +1,28 @@
-import { FileItem } from './types';
+import { FileItem, Language } from './types';
 
 const getApiBase = () => {
   if (typeof window === 'undefined') {
     return 'http://localhost:9002/api';
   }
   return `http://${window.location.hostname}:9002/api`;
+};
+
+const getFileBase = () => {
+  if (typeof window === 'undefined') {
+    return 'http://localhost:9002';
+  }
+  return `http://${window.location.hostname}:9002`;
+};
+
+const toAbsoluteFileUrl = (fileUrl: string) => {
+  if (!fileUrl) return fileUrl;
+  if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+    return fileUrl;
+  }
+  if (fileUrl.startsWith('/')) {
+    return `${getFileBase()}${fileUrl}`;
+  }
+  return `${getFileBase()}/${fileUrl}`;
 };
 const STORAGE_VERSION = 1;
 
@@ -26,6 +44,7 @@ type StoredFileRecord = {
 type StoredState = {
   version: number;
   updatedAt: string;
+  language?: Language;
   availableTags: string[];
   files: StoredFileRecord[];
 };
@@ -48,7 +67,10 @@ export const savePdfFile = async (id: string, file: File, folder = 'pdfs') => {
     throw new Error('Failed to save PDF');
   }
   const data = (await response.json()) as PdfUploadResponse;
-  return data;
+  return {
+    ...data,
+    fileUrl: toAbsoluteFileUrl(data.fileUrl),
+  };
 };
 
 export const deletePdfFile = async (storagePath: string) => {
@@ -59,7 +81,11 @@ export const deletePdfFile = async (storagePath: string) => {
   });
 };
 
-export const saveAppState = async (files: FileItem[], availableTags: string[]) => {
+export const saveAppState = async (
+  files: FileItem[],
+  availableTags: string[],
+  language?: Language,
+) => {
   const storedFiles: StoredFileRecord[] = files.map((file) => ({
     id: file.id,
     name: file.name,
@@ -77,6 +103,7 @@ export const saveAppState = async (files: FileItem[], availableTags: string[]) =
   const payload: StoredState = {
     version: STORAGE_VERSION,
     updatedAt: new Date().toISOString(),
+    language,
     availableTags,
     files: storedFiles,
   };
@@ -90,6 +117,7 @@ export const saveAppState = async (files: FileItem[], availableTags: string[]) =
 export const loadAppState = async (): Promise<{
   files: FileItem[];
   availableTags: string[];
+  language?: Language;
 } | null> => {
   const response = await fetch(`${getApiBase()}/state`);
   if (!response.ok) return null;
@@ -106,11 +134,14 @@ export const loadAppState = async (): Promise<{
     isStarred: record.isStarred,
     isRead: record.isRead,
     color: record.color,
-    fileUrl: `/${record.storagePath}`,
+    fileUrl: toAbsoluteFileUrl(`/${record.storagePath}`),
     storagePath: record.storagePath,
   }));
   return {
     files,
     availableTags: stored.availableTags ?? [],
+    language: stored.language,
   };
 };
+
+export const resolvePdfFileUrl = (fileUrl: string) => toAbsoluteFileUrl(fileUrl);
