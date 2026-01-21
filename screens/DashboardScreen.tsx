@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, MoreVertical, FileText, BadgeCheck, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Share, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Search, SlidersHorizontal, MoreVertical, FileText, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Share, Trash2, Eye, EyeOff, Download } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { PopupNotice } from '../components/PopupNotice';
 import { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -21,6 +22,10 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
     const [searchTerm, setSearchTerm] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showRangeDownload, setShowRangeDownload] = useState(false);
+    const [rangeStartDate, setRangeStartDate] = useState('');
+    const [rangeEndDate, setRangeEndDate] = useState('');
+    const [popupMessage, setPopupMessage] = useState<string | null>(null);
     const [activeTagFilters, setActiveTagFilters] = useState<string[]>([]);
     const [readStatusFilter, setReadStatusFilter] = useState<'all' | 'read' | 'unread'>('all');
     const categoryMap = useMemo(() => new Map(categories.map((category) => [category.name, category])), [categories]);
@@ -65,6 +70,37 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
     const clearDateFilter = () => {
         setSelectedDateFilter(null);
         setShowDatePicker(false);
+    };
+
+    const filesInRange = useMemo(() => {
+        const start = rangeStartDate ? new Date(`${rangeStartDate}T00:00:00`) : null;
+        const end = rangeEndDate ? new Date(`${rangeEndDate}T23:59:59`) : null;
+
+        return files.filter((file) => {
+            const fileDate = file.date;
+            if (start && fileDate < start) return false;
+            if (end && fileDate > end) return false;
+            return true;
+        });
+    }, [files, rangeStartDate, rangeEndDate]);
+
+    const handleRangeDownload = () => {
+        const downloadableFiles = filesInRange.filter((file) => file.fileUrl);
+
+        if (downloadableFiles.length === 0) {
+            setPopupMessage(t.downloadRangeEmpty);
+            return;
+        }
+
+        downloadableFiles.forEach((file) => {
+            const link = document.createElement('a');
+            link.href = file.fileUrl;
+            link.download = file.name || 'document.pdf';
+            link.rel = 'noopener noreferrer';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        });
     };
 
     const filteredFiles = files.filter(file => {
@@ -150,6 +186,10 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                 <div className="fixed inset-0 z-20 cursor-default" onClick={() => setActiveMenuId(null)}></div>
             )}
 
+            {popupMessage && (
+                <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
+            )}
+
             {/* Search (Sticky Header) */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-xl px-4 pt-8 pb-4 transition-colors duration-300">
                 <div className="relative group flex items-center gap-3">
@@ -182,6 +222,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                                 </span>
                             )}
                         </div>
+                    </button>
+
+                    {/* Date Range Download */}
+                    <button
+                        onClick={() => setShowRangeDownload(true)}
+                        className="size-[50px] flex items-center justify-center rounded-2xl transition-all shadow-sm bg-surface text-gray-400 hover:text-white hover:bg-card"
+                    >
+                        <Download size={20} strokeWidth={2} />
                     </button>
 
                     {/* Filter Toggle */}
@@ -456,6 +504,60 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                             className="w-full py-3.5 rounded-xl bg-background text-gray-400 font-bold hover:bg-white/5 hover:text-white transition-colors text-sm"
                         >
                             {t.resetFilter}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Range Download Modal */}
+            {showRangeDownload && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center px-6 animate-in fade-in duration-200">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                        onClick={() => setShowRangeDownload(false)}
+                    ></div>
+                    <div className="bg-surface w-full max-w-[360px] rounded-[32px] shadow-2xl relative z-10 overflow-hidden flex flex-col p-6 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-xl font-bold text-white tracking-tight">{t.downloadRangeTitle}</h3>
+                                <p className="text-xs text-gray-500 font-medium mt-0.5">
+                                    {t.downloadRangeHint.replace('{count}', String(filesInRange.length))}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setShowRangeDownload(false)}
+                                className="size-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{t.fromDate}</label>
+                                <input
+                                    type="date"
+                                    value={rangeStartDate}
+                                    onChange={(event) => setRangeStartDate(event.target.value)}
+                                    className="mt-2 w-full rounded-xl bg-background px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-secondary/70"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{t.toDate}</label>
+                                <input
+                                    type="date"
+                                    value={rangeEndDate}
+                                    onChange={(event) => setRangeEndDate(event.target.value)}
+                                    className="mt-2 w-full rounded-xl bg-background px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-secondary/70"
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleRangeDownload}
+                            className="w-full rounded-2xl bg-secondary text-black py-3 text-sm font-extrabold shadow-xl shadow-secondary/20 transition-all hover:brightness-110 active:scale-[0.99]"
+                        >
+                            {t.downloadRangeCta}
                         </button>
                     </div>
                 </div>

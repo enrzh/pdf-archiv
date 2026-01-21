@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Folder, FileText, MoreVertical, ChevronLeft, Download } from 'lucide-react';
+import { Folder, FileText, MoreVertical, ChevronLeft } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
 import { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
-import { PopupNotice } from '../components/PopupNotice';
 
 interface FoldersScreenProps {
     files: FileItem[];
@@ -16,9 +15,6 @@ interface FoldersScreenProps {
 export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate, onFileSelect, lang, categories }) => {
     const t = TRANSLATIONS[lang].folders;
     const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
     // Aggregate tags to create folders
     const folders = useMemo(() => {
@@ -64,43 +60,9 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
     const filteredFiles = selectedFolder 
         ? files.filter(f => selectedFolder === 'Unsorted' ? f.tags.length === 0 : f.tags.includes(selectedFolder))
         : [];
-    const filesInRange = useMemo(() => {
-        const start = startDate ? new Date(`${startDate}T00:00:00`) : null;
-        const end = endDate ? new Date(`${endDate}T23:59:59`) : null;
-
-        return filteredFiles.filter((file) => {
-            const fileDate = file.date;
-            if (start && fileDate < start) return false;
-            if (end && fileDate > end) return false;
-            return true;
-        });
-    }, [filteredFiles, startDate, endDate]);
-
-    const handleRangeDownload = () => {
-        const downloadableFiles = filesInRange.filter((file) => file.fileUrl);
-
-        if (downloadableFiles.length === 0) {
-            setPopupMessage(t.downloadEmpty);
-            return;
-        }
-
-        downloadableFiles.forEach((file) => {
-            const link = document.createElement('a');
-            link.href = file.fileUrl;
-            link.download = file.name || 'document.pdf';
-            link.rel = 'noopener noreferrer';
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        });
-    };
 
     return (
         <div className="min-h-screen bg-background text-gray-100 pb-24 animate-fade-in flex flex-col h-full transition-colors duration-300">
-            {popupMessage && (
-                <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
-            )}
-            
             {/* Header */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-md px-4 pt-8 pb-4 transition-colors duration-300">
                 <div className="flex items-center gap-3">
@@ -132,46 +94,6 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
                 {selectedFolder ? (
                     /* Folder Contents View */
                     <div className="space-y-4 animate-fade-in">
-                        <div className="bg-surface rounded-2xl p-4 shadow-sm space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-sm font-bold text-white">{t.downloadTitle}</h2>
-                                    <p className="text-xs text-gray-500">
-                                        {t.downloadHint.replace('{count}', String(filesInRange.length))}
-                                    </p>
-                                </div>
-                                <div className="size-10 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center">
-                                    <Download size={18} />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{t.fromDate}</label>
-                                    <input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(event) => setStartDate(event.target.value)}
-                                        className="mt-2 w-full rounded-xl bg-background px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-secondary/70"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{t.toDate}</label>
-                                    <input
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(event) => setEndDate(event.target.value)}
-                                        className="mt-2 w-full rounded-xl bg-background px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-secondary/70"
-                                    />
-                                </div>
-                            </div>
-                            <button
-                                onClick={handleRangeDownload}
-                                className="w-full rounded-2xl bg-secondary text-black py-3 text-sm font-extrabold shadow-xl shadow-secondary/20 transition-all hover:brightness-110 active:scale-[0.99]"
-                            >
-                                {t.downloadCta}
-                            </button>
-                        </div>
-
                         {filteredFiles.length > 0 ? (
                             filteredFiles.map((file) => (
                                 <div key={file.id} onClick={() => onFileSelect(file.id)} className="group cursor-pointer flex items-center gap-4 bg-surface p-3 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-white/5">
