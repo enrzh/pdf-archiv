@@ -30,6 +30,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     const t = TRANSLATIONS[lang].settings;
 
     useEffect(() => {
+        const storedTheme = window.localStorage.getItem('theme');
+        if (storedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+            setIsDark(false);
+            return;
+        }
+        if (storedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            setIsDark(true);
+            return;
+        }
         // Check initial state from DOM
         setIsDark(document.documentElement.classList.contains('dark'));
     }, []);
@@ -37,11 +48,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     const toggleTheme = () => {
         const newIsDark = !isDark;
         setIsDark(newIsDark);
+        window.localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
         if (newIsDark) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
+    };
+
+    const handleLanguageChange = (language: Language) => {
+        setLang(language);
+        window.localStorage.setItem('language', language);
     };
 
     const handleSaveNewTag = () => {
@@ -114,7 +131,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         {(['DE', 'EN', 'CN'] as Language[]).map((l) => (
                             <button
                                 key={l}
-                                onClick={() => setLang(l)}
+                                onClick={() => handleLanguageChange(l)}
                                 className={`h-10 rounded-xl text-xs font-bold transition-all ${
                                     lang === l 
                                     ? 'bg-white text-black shadow-lg' 
