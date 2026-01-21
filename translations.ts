@@ -32,7 +32,13 @@ export const TRANSLATIONS = {
       status: 'Status',
       read: 'Read',
       unread: 'Unread',
-      cancel: 'Cancel'
+      cancel: 'Cancel',
+      downloadRangeTitle: 'Download PDFs',
+      downloadRangeHint: 'In range: {count} documents',
+      fromDate: 'From',
+      toDate: 'To',
+      downloadRangeCta: 'Download PDFs',
+      downloadRangeEmpty: 'No PDFs found in the selected range.'
     },
     upload: {
       titleNew: 'New Archive',
@@ -84,13 +90,7 @@ export const TRANSLATIONS = {
       categories: 'categories',
       empty: 'This folder is empty.',
       unsorted: 'Unsorted',
-      updatedRecently: 'Updated recently',
-      downloadTitle: 'Download PDFs',
-      downloadHint: 'In range: {count} documents',
-      fromDate: 'From',
-      toDate: 'To',
-      downloadCta: 'Download folder',
-      downloadEmpty: 'No PDFs found in the selected range.'
+      updatedRecently: 'Updated recently'
     },
     starred: {
       title: 'Starred',
@@ -151,7 +151,13 @@ export const TRANSLATIONS = {
       status: 'Status',
       read: 'Gelesen',
       unread: 'Ungelesen',
-      cancel: 'Abbrechen'
+      cancel: 'Abbrechen',
+      downloadRangeTitle: 'PDFs herunterladen',
+      downloadRangeHint: 'Im Zeitraum: {count} Dokumente',
+      fromDate: 'Von',
+      toDate: 'Bis',
+      downloadRangeCta: 'PDFs herunterladen',
+      downloadRangeEmpty: 'Keine PDFs im ausgewählten Zeitraum gefunden.'
     },
     upload: {
       titleNew: 'Neues Archiv',
@@ -203,13 +209,7 @@ export const TRANSLATIONS = {
       categories: 'Kategorien',
       empty: 'Dieser Ordner ist leer.',
       unsorted: 'Unsortiert',
-      updatedRecently: 'Kürzlich aktualisiert',
-      downloadTitle: 'PDFs herunterladen',
-      downloadHint: 'Im Zeitraum: {count} Dokumente',
-      fromDate: 'Von',
-      toDate: 'Bis',
-      downloadCta: 'Ordner herunterladen',
-      downloadEmpty: 'Keine PDFs im ausgewählten Zeitraum gefunden.'
+      updatedRecently: 'Kürzlich aktualisiert'
     },
     starred: {
       title: 'Favoriten',
@@ -270,7 +270,13 @@ export const TRANSLATIONS = {
       status: '状态',
       read: '已读',
       unread: '未读',
-      cancel: '取消'
+      cancel: '取消',
+      downloadRangeTitle: '下载 PDF',
+      downloadRangeHint: '所选范围：{count} 份文档',
+      fromDate: '开始',
+      toDate: '结束',
+      downloadRangeCta: '下载 PDF',
+      downloadRangeEmpty: '所选范围内没有 PDF。'
     },
     upload: {
       titleNew: '新存档',
@@ -322,13 +328,7 @@ export const TRANSLATIONS = {
       categories: '类别',
       empty: '此文件夹为空。',
       unsorted: '未分类',
-      updatedRecently: '最近更新',
-      downloadTitle: '下载 PDF',
-      downloadHint: '所选范围：{count} 份文档',
-      fromDate: '开始',
-      toDate: '结束',
-      downloadCta: '下载文件夹',
-      downloadEmpty: '所选范围内没有 PDF。'
+      updatedRecently: '最近更新'
     },
     starred: {
       title: '收藏',
