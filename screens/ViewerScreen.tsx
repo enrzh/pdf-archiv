@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, FileText, Star, PenLine, X, Check, Calendar, Tag, Share, Eye, EyeOff, Download, Monitor, MonitorOff } from 'lucide-react';
-import { FileItem, Language } from '../types';
+import { Category, FileItem, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
 interface ViewerScreenProps {
@@ -11,10 +11,10 @@ interface ViewerScreenProps {
     onToggleStar: (id: string) => void;
     onToggleRead: (id: string) => void;
     lang: Language;
-    availableTags: string[];
+    categories: Category[];
 }
 
-export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExport, onDelete, onToggleStar, onToggleRead, lang, availableTags }) => {
+export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExport, onDelete, onToggleStar, onToggleRead, lang, categories }) => {
     const t = TRANSLATIONS[lang].viewer;
     const [isEditing, setIsEditing] = useState(false);
     const [editDate, setEditDate] = useState(file.date);
@@ -177,18 +177,19 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onExpo
                         <div className="mb-8">
                             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5 block ml-1">{t.category}</label>
                             <div className="flex flex-wrap gap-2.5">
-                                {availableTags.map(tag => (
+                                {categories.map((category) => (
                                     <button 
-                                        key={tag}
-                                        onClick={() => toggleTag(tag)}
+                                        key={category.name}
+                                        onClick={() => toggleTag(category.name)}
                                         className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-                                            editTags.includes(tag) 
+                                            editTags.includes(category.name) 
                                             ? 'bg-secondary text-black' 
                                             : 'bg-background text-gray-400 hover:bg-white/5'
                                         }`}
                                     >
+                                        <span className="size-2 rounded-full" style={{ backgroundColor: category.color }}></span>
                                         <Tag size={12} strokeWidth={2.5} />
-                                        {tag}
+                                        {category.name}
                                     </button>
                                 ))}
                             </div>

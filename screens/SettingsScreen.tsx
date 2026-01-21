@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Settings, Moon, Sun, Globe, Tag, Plus, Edit2, Trash2, X, Check } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { ScreenName, Language } from '../types';
+import { Category, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
 interface SettingsScreenProps {
     onNavigate: (screen: ScreenName) => void;
     lang: Language;
     setLang: (lang: Language) => void;
-    availableTags: string[];
-    onAddTag: (tag: string) => void;
-    onEditTag: (oldTag: string, newTag: string) => void;
+    categories: Category[];
+    onAddTag: (category: Category) => void;
+    onEditTag: (oldTag: string, category: Category) => void;
     onDeleteTag: (tag: string) => void;
 }
 
@@ -19,15 +19,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     onNavigate, 
     lang, 
     setLang, 
-    availableTags, 
+    categories, 
     onAddTag, 
     onEditTag, 
     onDeleteTag 
 }) => {
     const [isDark, setIsDark] = useState(true);
-    const [editingTag, setEditingTag] = useState<{ original: string, current: string } | null>(null);
+    const [editingTag, setEditingTag] = useState<{ original: string, current: string, color: string } | null>(null);
     const [isAddingTag, setIsAddingTag] = useState(false);
     const [newTagName, setNewTagName] = useState('');
+    const [newTagColor, setNewTagColor] = useState('#38bdf8');
     const [pendingDeleteTag, setPendingDeleteTag] = useState<string | null>(null);
     const t = TRANSLATIONS[lang].settings;
 
@@ -65,15 +66,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
     const handleSaveNewTag = () => {
         if (newTagName.trim()) {
-            onAddTag(newTagName.trim());
+            onAddTag({ name: newTagName.trim(), color: newTagColor });
             setNewTagName('');
+            setNewTagColor('#38bdf8');
             setIsAddingTag(false);
         }
     };
 
     const handleUpdateTag = () => {
         if (editingTag && editingTag.current.trim()) {
-            onEditTag(editingTag.original, editingTag.current.trim());
+            onEditTag(editingTag.original, { name: editingTag.current.trim(), color: editingTag.color });
             setEditingTag(null);
         }
     };
@@ -167,19 +169,22 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                      </div>
 
                      <div className="space-y-2">
-                         {availableTags.map(tag => (
-                             <div key={tag} className="flex items-center justify-between p-3 bg-background rounded-xl">
-                                 <span className="text-sm font-medium text-gray-300">{tag}</span>
+                         {categories.map((category) => (
+                             <div key={category.name} className="flex items-center justify-between p-3 bg-background rounded-xl">
+                                 <div className="flex items-center gap-2">
+                                     <span className="size-3 rounded-full" style={{ backgroundColor: category.color }}></span>
+                                     <span className="text-sm font-medium text-gray-300">{category.name}</span>
+                                 </div>
                                  <div className="flex items-center gap-2">
                                      <button 
-                                        onClick={() => setEditingTag({ original: tag, current: tag })}
+                                        onClick={() => setEditingTag({ original: category.name, current: category.name, color: category.color })}
                                         className="p-1.5 text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                                     >
                                          <Edit2 size={14} />
                                      </button>
                                      <button 
                                         onClick={() => {
-                                            setPendingDeleteTag(tag);
+                                            setPendingDeleteTag(category.name);
                                         }}
                                         className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                     >
@@ -247,6 +252,23 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                                 }}
                                 className="w-full bg-background rounded-2xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-primary/50 font-bold"
                             />
+                        </div>
+                        <div className="mb-6">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5 block ml-1">{t.categoryColor}</label>
+                            <div className="flex items-center gap-3 bg-background rounded-2xl p-4">
+                                <input
+                                    type="color"
+                                    value={isAddingTag ? newTagColor : editingTag?.color || '#38bdf8'}
+                                    onChange={(e) => {
+                                        if (isAddingTag) setNewTagColor(e.target.value);
+                                        else if (editingTag) setEditingTag({ ...editingTag, color: e.target.value });
+                                    }}
+                                    className="h-10 w-12 rounded-md border-0 bg-transparent"
+                                />
+                                <span className="text-xs font-semibold text-gray-400">
+                                    {isAddingTag ? newTagColor : editingTag?.color}
+                                </span>
+                            </div>
                         </div>
 
                         <div className="flex gap-3">

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, SlidersHorizontal, MoreVertical, FileText, BadgeCheck, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Share, Trash2, Eye, EyeOff } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { FileItem, ScreenName, Language } from '../types';
+import { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
 interface DashboardScreenProps {
@@ -13,16 +13,17 @@ interface DashboardScreenProps {
     onDelete: (id: string) => void;
     onToggleRead: (id: string) => void;
     lang: Language;
-    availableTags: string[];
+    categories: Category[];
 }
 
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavigate, onFileSelect, onExport, onDelete, onToggleRead, lang, availableTags }) => {
+export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavigate, onFileSelect, onExport, onDelete, onToggleRead, lang, categories }) => {
     const t = TRANSLATIONS[lang].dashboard;
     const [searchTerm, setSearchTerm] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [activeTagFilters, setActiveTagFilters] = useState<string[]>([]);
     const [readStatusFilter, setReadStatusFilter] = useState<'all' | 'read' | 'unread'>('all');
+    const categoryMap = useMemo(() => new Map(categories.map((category) => [category.name, category])), [categories]);
     
     // Date Filter State
     const [selectedDateFilter, setSelectedDateFilter] = useState<Date | null>(null);
@@ -265,11 +266,19 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                                             {/* Tags (Mini) */}
                                             {file.tags.length > 0 && (
                                                 <div className="flex -space-x-2 mr-1">
-                                                     {file.tags.slice(0, 2).map((tag, i) => (
-                                                        <div key={i} className="size-6 rounded-full bg-card flex items-center justify-center text-[10px] text-gray-400 font-bold z-0 shadow-sm">
-                                                            {tag.charAt(0)}
-                                                        </div>
-                                                     ))}
+                                                        {file.tags.slice(0, 2).map((tag, i) => {
+                                                            const category = categoryMap.get(tag);
+                                                            const label = tag.slice(0, 4).toUpperCase();
+                                                            return (
+                                                                <div
+                                                                    key={i}
+                                                                    className="size-6 rounded-full flex items-center justify-center text-[7px] font-black z-0 shadow-sm text-white"
+                                                                    style={{ backgroundColor: category?.color ?? '#1f2937' }}
+                                                                >
+                                                                    {label}
+                                                                </div>
+                                                            );
+                                                        })}
                                                      {file.tags.length > 2 && (
                                                          <div className="size-6 rounded-full bg-card flex items-center justify-center text-[8px] text-gray-500 font-bold z-10 shadow-sm">
                                                             +{file.tags.length - 2}
@@ -510,18 +519,19 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                              <div>
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 block ml-1">{t.categories}</label>
                                 <div className="flex flex-wrap gap-2.5">
-                                    {availableTags.map(tag => (
+                                    {categories.map((category) => (
                                         <button 
-                                            key={tag}
-                                            onClick={() => toggleTagFilter(tag)}
+                                            key={category.name}
+                                            onClick={() => toggleTagFilter(category.name)}
                                             className={`px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${
-                                                activeTagFilters.includes(tag) 
+                                                activeTagFilters.includes(category.name) 
                                                 ? 'bg-secondary text-black shadow-lg shadow-secondary/20' 
                                                 : 'bg-background text-gray-400 hover:bg-white/5'
                                             }`}
                                         >
-                                            {activeTagFilters.includes(tag) && <Check size={14} strokeWidth={3} />}
-                                            {tag}
+                                            <span className="size-2.5 rounded-full" style={{ backgroundColor: category.color }}></span>
+                                            {activeTagFilters.includes(category.name) && <Check size={14} strokeWidth={3} />}
+                                            {category.name}
                                         </button>
                                     ))}
                                 </div>

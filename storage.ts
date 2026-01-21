@@ -1,4 +1,4 @@
-import { FileItem, Language } from './types';
+import { Category, FileItem, Language } from './types';
 
 const getApiBase = () => {
   if (typeof window === 'undefined') {
@@ -24,7 +24,12 @@ const toAbsoluteFileUrl = (fileUrl: string) => {
   }
   return `${getFileBase()}/${fileUrl}`;
 };
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 2;
+
+type StoredCategory = {
+  name: string;
+  color: string;
+};
 
 type StoredFileRecord = {
   id: string;
@@ -45,7 +50,8 @@ type StoredState = {
   version: number;
   updatedAt: string;
   language?: Language;
-  availableTags: string[];
+  availableTags?: string[];
+  categories?: StoredCategory[];
   files: StoredFileRecord[];
 };
 
@@ -83,7 +89,7 @@ export const deletePdfFile = async (storagePath: string) => {
 
 export const saveAppState = async (
   files: FileItem[],
-  availableTags: string[],
+  categories: Category[],
   language?: Language,
 ) => {
   const storedFiles: StoredFileRecord[] = files.map((file) => ({
@@ -104,7 +110,7 @@ export const saveAppState = async (
     version: STORAGE_VERSION,
     updatedAt: new Date().toISOString(),
     language,
-    availableTags,
+    categories,
     files: storedFiles,
   };
   await fetch(`${getApiBase()}/state`, {
@@ -116,7 +122,8 @@ export const saveAppState = async (
 
 export const loadAppState = async (): Promise<{
   files: FileItem[];
-  availableTags: string[];
+  availableTags?: string[];
+  categories?: Category[];
   language?: Language;
 } | null> => {
   const response = await fetch(`${getApiBase()}/state`);
@@ -140,6 +147,7 @@ export const loadAppState = async (): Promise<{
   return {
     files,
     availableTags: stored.availableTags ?? [],
+    categories: stored.categories ?? [],
     language: stored.language,
   };
 };
