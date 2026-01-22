@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "9001:9001"
+      - "8088:8088"
     volumes:
       - ./:/app
       - /app/node_modules
@@ -16,10 +16,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "9002:9002"
+      - "8089:8089"
     volumes:
       - ./:/app
       - /app/node_modules
     environment:
-      PORT: "9002"
+      PORT: "8089"
     command: node server.js

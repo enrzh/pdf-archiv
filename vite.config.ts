@@ -6,12 +6,12 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       server: {
-        port: 9001,
+        port: 8088,
         host: '0.0.0.0',
         allowedHosts: ["nas"],
         proxy: {
-          '/api': 'http://localhost:9002',
-          '/data': 'http://localhost:9002',
+          '/api': 'http://localhost:8089',
+          '/data': 'http://localhost:8089',
         },
       },
       plugins: [react()],

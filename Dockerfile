@@ -7,5 +7,5 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-EXPOSE 9001
+EXPOSE 8088
 CMD ["sh", "-c", "npm run dev:all"]

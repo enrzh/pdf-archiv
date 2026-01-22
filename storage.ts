@@ -2,16 +2,16 @@ import { Category, FileItem, Language } from './types';
 
 const getApiBase = () => {
   if (typeof window === 'undefined') {
-    return 'http://localhost:9002/api';
+    return 'http://localhost:8089/api';
   }
-  return `http://${window.location.hostname}:9002/api`;
+  return `http://${window.location.hostname}:8089/api`;
 };
 
 const getFileBase = () => {
   if (typeof window === 'undefined') {
-    return 'http://localhost:9002';
+    return 'http://localhost:8089';
   }
-  return `http://${window.location.hostname}:9002`;
+  return `http://${window.location.hostname}:8089`;
 };
 
 const toAbsoluteFileUrl = (fileUrl: string) => {
