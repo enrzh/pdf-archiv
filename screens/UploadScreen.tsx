@@ -109,6 +109,9 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
         setIsArchiving(true);
         try {
             await onArchive(payload, selectedDate, selectedTags);
+        } catch (error) {
+            console.error('Failed to archive files', error);
+            setPopupMessage(t.uploadFailed);
         } finally {
             if (isMountedRef.current) {
                 setIsArchiving(false);

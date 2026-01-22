@@ -59,6 +59,7 @@ export const TRANSLATIONS = {
       archive: 'Archive',
       optimizing: 'Optimizing...',
       uploading: 'Uploading...',
+      uploadFailed: 'Upload failed. Please try again.',
       yearMonth: 'Year & Month'
     },
     viewer: {
@@ -181,6 +182,7 @@ export const TRANSLATIONS = {
       archive: 'Archivieren',
       optimizing: 'Optimiere...',
       uploading: 'Wird hochgeladen...',
+      uploadFailed: 'Upload fehlgeschlagen. Bitte erneut versuchen.',
       yearMonth: 'Jahr & Monat'
     },
     viewer: {
@@ -303,6 +305,7 @@ export const TRANSLATIONS = {
       archive: '归档',
       optimizing: '优化中...',
       uploading: '正在上传...',
+      uploadFailed: '上传失败，请重试。',
       yearMonth: '年 & 月'
     },
     viewer: {
