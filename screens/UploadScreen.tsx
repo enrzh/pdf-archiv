@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, CloudUpload, RefreshCw, Trash2, ChevronRight, CheckCircle, Info, Receipt, Plus, FileText, Zap, Loader2, X, Paperclip } from 'lucide-react';
 import { Category, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
@@ -22,10 +22,12 @@ interface UploadFileState {
 export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, lang, categories }) => {
     const t = TRANSLATIONS[lang].upload;
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const isMountedRef = useRef(true);
     const [uploadedFiles, setUploadedFiles] = useState<UploadFileState[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [popupMessage, setPopupMessage] = useState<string | null>(null);
+    const [isArchiving, setIsArchiving] = useState(false);
     
     // Calendar logic
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -44,6 +46,12 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
 
     const { days, firstDay } = getDaysInMonth(currentMonth);
     const prevMonthDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0).getDate();
+
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -83,9 +91,13 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
         setUploadedFiles(prev => prev.filter(f => f.id !== id));
     };
 
-    const handleArchiveClick = () => {
+    const handleArchiveClick = async () => {
         if (uploadedFiles.length === 0) {
             setPopupMessage('Please select files first.');
+            return;
+        }
+
+        if (isAnyCompressing || isArchiving) {
             return;
         }
         
@@ -94,7 +106,17 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
             size: (f.displaySize / 1024 / 1024).toFixed(2) + ' MB'
         }));
 
-        onArchive(payload, selectedDate, selectedTags);
+        setIsArchiving(true);
+        try {
+            await onArchive(payload, selectedDate, selectedTags);
+        } catch (error) {
+            console.error('Failed to archive files', error);
+            setPopupMessage(t.uploadFailed);
+        } finally {
+            if (isMountedRef.current) {
+                setIsArchiving(false);
+            }
+        }
     };
 
     const toggleTag = (tag: string) => {
@@ -134,6 +156,15 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
         <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-36 overflow-y-auto transition-colors duration-300 relative">
             {popupMessage && (
                 <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
+            )}
+            {isArchiving && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center px-6 animate-in fade-in duration-200">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                    <div className="relative z-10 bg-surface/95 backdrop-blur-xl rounded-[28px] px-8 py-6 shadow-2xl flex flex-col items-center gap-3 animate-in zoom-in-95 duration-200">
+                        <Loader2 size={32} className="text-primary animate-spin" />
+                        <p className="text-sm font-bold text-white tracking-wide">{t.uploading}</p>
+                    </div>
+                </div>
             )}
             {/* Floating Back Button */}
             <div className="sticky top-0 z-50 p-6 pointer-events-none flex justify-between items-start">
@@ -339,9 +370,9 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
                 <div className="max-w-md mx-auto">
                     <button 
                         onClick={handleArchiveClick}
-                        disabled={uploadedFiles.length === 0 || isAnyCompressing}
+                        disabled={uploadedFiles.length === 0 || isAnyCompressing || isArchiving}
                         className={`w-full py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl shadow-black/50 transition-all active:scale-[0.98] ${
-                            uploadedFiles.length > 0 && !isAnyCompressing
+                            uploadedFiles.length > 0 && !isAnyCompressing && !isArchiving
                             ? 'bg-white text-black hover:bg-gray-200'
                             : 'bg-surface text-gray-500 cursor-not-allowed'
                         }`}

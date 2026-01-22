@@ -19,6 +19,7 @@ export const TRANSLATIONS = {
       noFiles: 'No files found',
       clearFilters: 'Clear filters',
       export: 'Export',
+      download: 'Download',
       delete: 'Delete',
       deleteConfirm: 'Are you sure you want to delete this file?',
       reset: 'Reset',
@@ -38,7 +39,8 @@ export const TRANSLATIONS = {
       fromDate: 'From',
       toDate: 'To',
       downloadRangeCta: 'Download PDFs',
-      downloadRangeEmpty: 'No PDFs found in the selected range.'
+      downloadRangeEmpty: 'No PDFs found in the selected range.',
+      downloadUnavailable: 'No PDF available for download.'
     },
     upload: {
       titleNew: 'New Archive',
@@ -56,6 +58,8 @@ export const TRANSLATIONS = {
       categories: 'Categories',
       archive: 'Archive',
       optimizing: 'Optimizing...',
+      uploading: 'Uploading...',
+      uploadFailed: 'Upload failed. Please try again.',
       yearMonth: 'Year & Month'
     },
     viewer: {
@@ -138,6 +142,7 @@ export const TRANSLATIONS = {
       noFiles: 'Keine Dateien gefunden',
       clearFilters: 'Filter zurücksetzen',
       export: 'Exportieren',
+      download: 'Herunterladen',
       delete: 'Löschen',
       deleteConfirm: 'Sind Sie sicher, dass Sie diese Datei löschen möchten?',
       reset: 'Zurücksetzen',
@@ -157,7 +162,8 @@ export const TRANSLATIONS = {
       fromDate: 'Von',
       toDate: 'Bis',
       downloadRangeCta: 'PDFs herunterladen',
-      downloadRangeEmpty: 'Keine PDFs im ausgewählten Zeitraum gefunden.'
+      downloadRangeEmpty: 'Keine PDFs im ausgewählten Zeitraum gefunden.',
+      downloadUnavailable: 'Kein PDF zum Herunterladen verfügbar.'
     },
     upload: {
       titleNew: 'Neues Archiv',
@@ -175,6 +181,8 @@ export const TRANSLATIONS = {
       categories: 'Kategorien',
       archive: 'Archivieren',
       optimizing: 'Optimiere...',
+      uploading: 'Wird hochgeladen...',
+      uploadFailed: 'Upload fehlgeschlagen. Bitte erneut versuchen.',
       yearMonth: 'Jahr & Monat'
     },
     viewer: {
@@ -257,6 +265,7 @@ export const TRANSLATIONS = {
       noFiles: '未找到文件',
       clearFilters: '清除筛选',
       export: '导出',
+      download: '下载',
       delete: '删除',
       deleteConfirm: '确定要删除此文件吗？',
       reset: '重置',
@@ -276,7 +285,8 @@ export const TRANSLATIONS = {
       fromDate: '开始',
       toDate: '结束',
       downloadRangeCta: '下载 PDF',
-      downloadRangeEmpty: '所选范围内没有 PDF。'
+      downloadRangeEmpty: '所选范围内没有 PDF。',
+      downloadUnavailable: '没有可下载的 PDF。'
     },
     upload: {
       titleNew: '新存档',
@@ -294,6 +304,8 @@ export const TRANSLATIONS = {
       categories: '类别',
       archive: '归档',
       optimizing: '优化中...',
+      uploading: '正在上传...',
+      uploadFailed: '上传失败，请重试。',
       yearMonth: '年 & 月'
     },
     viewer: {

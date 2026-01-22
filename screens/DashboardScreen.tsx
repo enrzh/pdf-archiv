@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, MoreVertical, FileText, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Share, Trash2, Eye, EyeOff, Download } from 'lucide-react';
+import { Search, SlidersHorizontal, MoreVertical, FileText, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Trash2, Eye, EyeOff, Download } from 'lucide-react';
 import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PopupNotice } from '../components/PopupNotice';
@@ -101,6 +101,21 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
             link.click();
             link.remove();
         });
+    };
+
+    const handleFileDownload = (file: FileItem) => {
+        if (!file.fileUrl) {
+            setPopupMessage(t.downloadUnavailable);
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.href = file.fileUrl;
+        link.download = file.name || 'document.pdf';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
     };
 
     const filteredFiles = files.filter(file => {
@@ -360,13 +375,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                                                             <button 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    onExport(file.id);
+                                                                    handleFileDownload(file);
                                                                     setActiveMenuId(null);
                                                                 }}
                                                                 className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-200 hover:bg-white/5 hover:text-white flex items-center gap-3 transition-colors"
                                                             >
-                                                                <Share size={16} className="text-secondary" />
-                                                                {t.export}
+                                                                <Download size={16} className="text-secondary" />
+                                                                {t.download}
                                                             </button>
                                                             <button 
                                                                 onClick={(e) => handleDeleteClick(e, file.id)}
