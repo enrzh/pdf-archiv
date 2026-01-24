@@ -6,6 +6,8 @@ COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 COPY . .
+RUN npm run build
 
 EXPOSE 9001
-CMD ["sh", "-c", "npm run dev:all"]
+EXPOSE 9002
+CMD ["npm", "run", "stable"]

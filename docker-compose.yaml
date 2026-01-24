@@ -1,25 +1,14 @@
 services:
-  lexware:
+  pdf-archiv:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "9001:9001"
-    volumes:
-      - ./:/app
-      - /app/node_modules
-    environment:
-      CHOKIDAR_USEPOLLING: "true"
-    command: npm run dev:all
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
       - "9002:9002"
-    volumes:
-      - ./:/app
-      - /app/node_modules
     environment:
       PORT: "9002"
-    command: node server.js
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: always
