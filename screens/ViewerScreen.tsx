@@ -9,14 +9,16 @@ interface ViewerScreenProps {
     onDelete: () => void;
     onToggleStar: (id: string) => void;
     onToggleRead: (id: string) => void;
+    onUpdate: (id: string, updates: Partial<FileItem>) => void;
     lang: Language;
     categories: Category[];
     previewDefaultEnabled: boolean;
 }
 
-export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onDelete, onToggleStar, onToggleRead, lang, categories, previewDefaultEnabled }) => {
+export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onDelete, onToggleStar, onToggleRead, onUpdate, lang, categories, previewDefaultEnabled }) => {
     const t = TRANSLATIONS[lang].viewer;
     const [isEditing, setIsEditing] = useState(false);
+    const [editName, setEditName] = useState(file.name);
     const [editDate, setEditDate] = useState(file.date);
     const [editTags, setEditTags] = useState(file.tags);
     const [isPreviewEnabled, setIsPreviewEnabled] = useState(previewDefaultEnabled);
@@ -25,10 +27,20 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onDele
         setIsPreviewEnabled(previewDefaultEnabled);
     }, [previewDefaultEnabled, file.id]);
 
+    useEffect(() => {
+        setEditName(file.name);
+        setEditDate(file.date);
+        setEditTags(file.tags);
+    }, [file]);
+
     // Toggle Edit Modal
     const toggleEdit = () => {
         if (isEditing) {
-            // "Save" (Mock)
+            onUpdate(file.id, {
+                name: editName,
+                date: editDate,
+                tags: editTags
+            });
             setIsEditing(false);
         } else {
             setIsEditing(true);
@@ -153,6 +165,21 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onDele
                             <button onClick={() => setIsEditing(false)} className="size-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
                                 <X size={18} />
                             </button>
+                        </div>
+
+                        {/* Name Edit */}
+                        <div className="mb-6">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5 block ml-1">{t.fileName}</label>
+                            <div className="flex items-center gap-3 bg-background p-3.5 rounded-2xl transition-colors">
+                                <FileText size={20} className="text-primary" />
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    className="bg-transparent border-none text-white font-bold w-full focus:ring-0 p-0 text-base"
+                                    placeholder={t.fileName}
+                                />
+                            </div>
                         </div>
 
                         {/* Date Edit */}

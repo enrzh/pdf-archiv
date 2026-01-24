@@ -64,6 +64,7 @@ export const TRANSLATIONS = {
     },
     viewer: {
       editDetails: 'Edit Details',
+      fileName: 'File Name',
       archiveDate: 'Archive Date',
       category: 'Category',
       saveChanges: 'Save Changes',
@@ -187,6 +188,7 @@ export const TRANSLATIONS = {
     },
     viewer: {
       editDetails: 'Details bearbeiten',
+      fileName: 'Dateiname',
       archiveDate: 'Archivdatum',
       category: 'Kategorie',
       saveChanges: 'Speichern',
@@ -310,6 +312,7 @@ export const TRANSLATIONS = {
     },
     viewer: {
       editDetails: '编辑详情',
+      fileName: '文件名',
       archiveDate: '存档日期',
       category: '类别',
       saveChanges: '保存更改',
