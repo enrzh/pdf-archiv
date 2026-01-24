@@ -156,6 +156,10 @@ export default function App() {
       setFiles(prev => prev.map(f => f.id === id ? { ...f, isRead: !f.isRead } : f));
   };
 
+  const handleUpdateFile = (id: string, updates: Partial<FileItem>) => {
+    setFiles(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
+  };
+
   // Tag Management Handlers
   const handleAddTag = (category: Category) => {
     if (!category.name || categories.some((item) => item.name === category.name)) return;
@@ -250,6 +254,7 @@ export default function App() {
             onDelete={() => handleDelete(selectedFile.id)}
             onToggleStar={handleToggleStar}
             onToggleRead={handleToggleRead}
+            onUpdate={handleUpdateFile}
           />
         ) : <DashboardScreen files={files} lang={lang} categories={categories} onNavigate={setCurrentScreen} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
       case 'upload':
