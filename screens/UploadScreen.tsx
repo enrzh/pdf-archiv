@@ -340,10 +340,8 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
                         </div>
                     </div>
 
-                    <div className="h-px bg-white/5 w-full mb-8"></div>
-
                     {/* Tags */}
-                    <div>
+                    <div className="mt-8">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">{t.categories}</h3>
                         <div className="flex flex-wrap gap-2">
                             {categories.map((category) => (

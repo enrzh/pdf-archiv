@@ -67,7 +67,7 @@ export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang 
                             </div>
                         </label>
                         
-                        <label className="flex items-center justify-between p-4 cursor-pointer active:bg-white/5 transition-colors border-t border-white/5">
+                        <label className="flex items-center justify-between p-4 cursor-pointer active:bg-white/5 transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className="size-10 bg-orange-500/10 text-orange-400 rounded-xl flex items-center justify-center">
                                     <FileText size={20} />

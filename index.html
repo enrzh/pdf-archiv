@@ -26,8 +26,8 @@
               card: "var(--bg-card)",
               
               // Dynamic Base Colors (Inverted for Light Mode)
-              white: "var(--color-white)",
-              black: "var(--color-black)",
+              white: "rgb(var(--color-white) / <alpha-value>)",
+              black: "rgb(var(--color-black) / <alpha-value>)",
               
               // Dynamic Gray Scale
               gray: {
@@ -60,8 +60,8 @@
         --bg-surface: #ffffff;
         --bg-card: #ffffff;
         
-        --color-white: #111827; /* Text becomes dark */
-        --color-black: #ffffff; /* Backgrounds become light */
+        --color-white: 17 24 39; /* #111827 */
+        --color-black: 255 255 255; /* #ffffff */
         
         --color-gray-100: #1f2937;
         --color-gray-300: #6b7280;
@@ -76,8 +76,8 @@
         --bg-surface: #141416;    /* Slightly lighter than black */
         --bg-card: #1f1f22;       /* Distinguishable card layer */
         
-        --color-white: #ffffff;
-        --color-black: #000000;
+        --color-white: 255 255 255;
+        --color-black: 0 0 0;
         
         --color-gray-100: #f4f4f5;
         --color-gray-300: #a1a1aa;
@@ -102,7 +102,7 @@
 
       body {
         background-color: var(--bg-background);
-        color: var(--color-white);
+        color: rgb(var(--color-white));
         transition: background-color 0.3s ease, color 0.3s ease;
       }
       

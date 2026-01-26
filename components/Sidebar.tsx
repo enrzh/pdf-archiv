@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, lang = 
     ];
 
     return (
-        <aside className="hidden lg:flex flex-col w-64 bg-surface border-r border-white/5 h-screen sticky top-0">
+        <aside className="hidden lg:flex flex-col w-64 bg-surface h-screen sticky top-0">
             <div className="p-8">
                 <h1 className="text-2xl font-black text-primary tracking-tighter flex items-center gap-2">
                     <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
@@ -56,12 +56,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, lang = 
                 })}
             </nav>
 
-            <div className="p-6">
-                <div className="bg-background rounded-2xl p-4 border border-white/5">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">PRO VERSION</p>
-                    <p className="text-xs text-gray-400 font-medium leading-relaxed">Unlimited storage & desktop sync enabled.</p>
-                </div>
-            </div>
         </aside>
     );
 };

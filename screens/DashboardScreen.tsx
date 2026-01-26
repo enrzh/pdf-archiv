@@ -371,7 +371,6 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                                                                 {file.isRead ? <EyeOff size={16} className="text-gray-400" /> : <Eye size={16} className="text-blue-400" />}
                                                                 {file.isRead ? t.markUnread : t.markRead}
                                                             </button>
-                                                            <div className="h-px bg-white/5 my-0.5"></div>
                                                             <button 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
