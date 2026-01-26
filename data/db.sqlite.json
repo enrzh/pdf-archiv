@@ -1,7 +1,36 @@
 {
   "version": 2,
-  "updatedAt": "",
-  "availableTags": [],
-  "categories": [],
+  "updatedAt": "2026-01-26T09:12:57.739Z",
+  "language": "DE",
+  "categories": [
+    {
+      "name": "Rechnung",
+      "color": "#38bdf8"
+    },
+    {
+      "name": "Vertrag",
+      "color": "#f97316"
+    },
+    {
+      "name": "Steuer",
+      "color": "#a855f7"
+    },
+    {
+      "name": "Wichtig",
+      "color": "#f43f5e"
+    },
+    {
+      "name": "Sonstiges",
+      "color": "#eab308"
+    },
+    {
+      "name": "Privat",
+      "color": "#14b8a6"
+    },
+    {
+      "name": "Arbeit",
+      "color": "#22c55e"
+    }
+  ],
   "files": []
 }

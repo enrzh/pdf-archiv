@@ -12,7 +12,7 @@ interface BottomNavProps {
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onNavigate, lang = 'EN' }) => {
     const t = TRANSLATIONS[lang].nav;
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl px-6 pb-8 pt-4 flex justify-between items-center z-50 max-w-md mx-auto transition-all duration-300 shadow-float">
+        <div className="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl px-6 pb-8 pt-4 flex justify-between items-center z-50 max-w-md mx-auto transition-all duration-300 shadow-float lg:hidden">
             <button 
                 onClick={() => onNavigate('dashboard')}
                 className={`flex flex-col items-center gap-1.5 transition-all active:scale-95 ${activeTab === 'dashboard' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}

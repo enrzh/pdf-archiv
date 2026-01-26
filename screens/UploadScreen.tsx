@@ -153,7 +153,7 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
     const savedSpace = originalTotalSize - totalSize;
 
     return (
-        <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-36 overflow-y-auto transition-colors duration-300 relative">
+        <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-36 lg:pb-10 overflow-y-auto transition-colors duration-300 relative">
             {popupMessage && (
                 <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
             )}
@@ -366,8 +366,8 @@ export const UploadScreen: React.FC<UploadScreenProps> = ({ onBack, onArchive, l
             </main>
 
             {/* Bottom Action Bar */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-background via-background/95 to-transparent z-40">
-                <div className="max-w-md mx-auto">
+            <div className="fixed lg:absolute bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-background via-background/95 to-transparent z-40">
+                <div className="max-w-md lg:max-w-2xl mx-auto">
                     <button 
                         onClick={handleArchiveClick}
                         disabled={uploadedFiles.length === 0 || isAnyCompressing || isArchiving}
