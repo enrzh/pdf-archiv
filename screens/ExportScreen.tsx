@@ -26,7 +26,7 @@ export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang 
     };
 
     return (
-        <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-40 overflow-y-auto transition-colors duration-300 relative">
+        <div className="min-h-screen bg-background text-gray-100 font-display animate-fade-in pb-40 lg:pb-10 overflow-y-auto transition-colors duration-300 relative">
             {popupMessage && (
                 <PopupNotice message={popupMessage} onClose={() => setPopupMessage(null)} />
             )}
@@ -97,8 +97,8 @@ export const ExportScreen: React.FC<ExportScreenProps> = ({ files, onBack, lang 
                 </div>
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl px-4 pt-4 pb-10 z-50 transition-colors duration-300">
-                <div className="max-w-md mx-auto">
+            <div className="fixed lg:absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl px-4 pt-4 pb-10 z-50 transition-colors duration-300">
+                <div className="max-w-md lg:max-w-2xl mx-auto">
                     <button onClick={handlePrint} className="w-full bg-secondary hover:brightness-110 text-black py-4 rounded-2xl font-extrabold flex items-center justify-center gap-2 shadow-xl shadow-secondary/20 active:scale-[0.98] transition-all">
                         <Printer size={20} strokeWidth={3} />
                         {t.printPdf}

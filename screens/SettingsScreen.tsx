@@ -89,7 +89,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     };
 
     return (
-        <div className="min-h-screen bg-background text-gray-100 pb-24 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
+        <div className="min-h-screen bg-background text-gray-100 pb-24 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
             {/* Header */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-xl px-4 pt-8 pb-4 transition-colors duration-300">
                 <div className="flex items-center gap-3">

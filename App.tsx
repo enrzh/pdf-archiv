@@ -6,6 +6,8 @@ import { ExportScreen } from './screens/ExportScreen';
 import { FoldersScreen } from './screens/FoldersScreen';
 import { StarredScreen } from './screens/StarredScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { Sidebar } from './components/Sidebar';
+import { DesktopLayout } from './components/DesktopLayout';
 import { Category, ScreenName, FileItem, Language } from './types';
 import { deletePdfFile, loadAppState, saveAppState, savePdfFile } from './storage';
 
@@ -29,6 +31,14 @@ export default function App() {
   const [isStorageReady, setIsStorageReady] = useState(false);
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
   const [previewDefaultEnabled, setPreviewDefaultEnabled] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => setIsDesktop(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     const storedLang = window.localStorage.getItem('language');
@@ -282,6 +292,22 @@ export default function App() {
         return <DashboardScreen files={files} lang={lang} categories={categories} onNavigate={(screen) => setCurrentScreen(screen)} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
     }
   };
+
+  if (isDesktop) {
+    return (
+      <DesktopLayout
+        sidebar={
+          <Sidebar
+            activeTab={currentScreen}
+            onNavigate={(screen) => setCurrentScreen(screen)}
+            lang={lang}
+          />
+        }
+      >
+        {renderScreen()}
+      </DesktopLayout>
+    );
+  }
 
   return (
     <div className="bg-black min-h-screen font-sans flex justify-center">
