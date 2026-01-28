@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, FolderOpen, Star, Settings } from 'lucide-react';
+import { LayoutGrid, FolderOpen, Star, Settings, Plus } from 'lucide-react';
 import { ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -12,7 +12,7 @@ interface BottomNavProps {
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onNavigate, lang = 'EN' }) => {
     const t = TRANSLATIONS[lang].nav;
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl px-6 pb-8 pt-4 flex justify-between items-center z-50 max-w-md mx-auto transition-all duration-300 shadow-float lg:hidden">
+        <div className="bg-surface/95 backdrop-blur-xl px-6 pb-8 pt-4 flex justify-between items-center z-50 transition-all duration-300 lg:hidden border-t border-white/5">
             <button 
                 onClick={() => onNavigate('dashboard')}
                 className={`flex flex-col items-center gap-1.5 transition-all active:scale-95 ${activeTab === 'dashboard' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
@@ -29,8 +29,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onNavigate, lan
                 <span className="text-[10px] font-bold tracking-wide">{t.folders}</span>
             </button>
             
-            {/* Indicator pill/spacer - visually separates left and right */}
-            <div className="w-8 h-0.5 bg-transparent"></div>
+            {/* Central Add Button */}
+            <button
+                onClick={() => onNavigate('upload')}
+                className="size-14 bg-primary rounded-full shadow-glow text-background flex items-center justify-center active:scale-95 transition-all hover:scale-105"
+            >
+                <Plus size={32} strokeWidth={3} />
+            </button>
 
             <button 
                 onClick={() => onNavigate('starred')}

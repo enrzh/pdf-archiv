@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Moon, Sun, Globe, Tag, Plus, Edit2, Trash2, X, Check, Monitor, MonitorOff } from 'lucide-react';
-import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Category, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
@@ -89,7 +88,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     };
 
     return (
-        <div className="min-h-screen bg-background text-gray-100 pb-24 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
+        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
             {/* Header */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-xl px-4 pt-8 pb-4 transition-colors duration-300">
                 <div className="flex items-center gap-3">
@@ -227,7 +226,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                  </div>
             </div>
 
-            <BottomNav activeTab="settings" onNavigate={onNavigate} lang={lang} />
+            <div className="h-4 lg:hidden"></div>
 
             {pendingDeleteTag && (
                 <ConfirmDialog

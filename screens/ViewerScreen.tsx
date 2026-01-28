@@ -71,7 +71,7 @@ export const ViewerScreen: React.FC<ViewerScreenProps> = ({ file, onBack, onDele
     const shouldShowPreview = Boolean(file.fileUrl) && isPreviewEnabled;
 
     return (
-        <div className="h-screen bg-background flex flex-col text-white animate-fade-in relative overflow-hidden transition-colors duration-300">
+        <div className="h-full bg-background flex flex-col text-white animate-fade-in relative overflow-hidden transition-colors duration-300">
             
             {/* Main Content (Full Screen PDF) */}
             <main className="absolute inset-0 z-0 bg-background flex items-center justify-center">

@@ -7,6 +7,7 @@ import { FoldersScreen } from './screens/FoldersScreen';
 import { StarredScreen } from './screens/StarredScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { Sidebar } from './components/Sidebar';
+import { BottomNav } from './components/BottomNav';
 import { DesktopLayout } from './components/DesktopLayout';
 import { Category, ScreenName, FileItem, Language } from './types';
 import { deletePdfFile, loadAppState, saveAppState, savePdfFile } from './storage';
@@ -311,8 +312,17 @@ export default function App() {
 
   return (
     <div className="bg-black min-h-screen font-sans flex justify-center">
-      <div className="w-full max-w-md relative bg-background shadow-2xl min-h-screen overflow-hidden flex flex-col">
-        {renderScreen()}
+      <div className="w-full max-w-md relative bg-background shadow-2xl h-screen overflow-hidden flex flex-col">
+        <div className="flex-1 min-h-0 relative overflow-hidden">
+          {renderScreen()}
+        </div>
+        {!isDesktop && (
+          <BottomNav
+            activeTab={currentScreen}
+            onNavigate={setCurrentScreen}
+            lang={lang}
+          />
+        )}
       </div>
     </div>
   );
