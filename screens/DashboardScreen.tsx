@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { Search, SlidersHorizontal, MoreVertical, FileText, Plus, X, Check, Calendar, ChevronLeft, ChevronRight, Trash2, Eye, EyeOff, Download } from 'lucide-react';
-import { BottomNav } from '../components/BottomNav';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PopupNotice } from '../components/PopupNotice';
 import { Category, FileItem, ScreenName, Language } from '../types';
@@ -194,7 +193,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
     };
 
     return (
-        <div className="min-h-screen bg-background text-gray-100 pb-24 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
+        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
             
             {/* Backdrop for closing menu */}
             {activeMenuId && (
@@ -265,7 +264,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
             </div>
 
             {/* Uploads List */}
-            <div className="px-4 mt-4 flex-1 overflow-y-auto pb-24 lg:pb-10">
+            <div className="px-4 mt-4 flex-1 overflow-y-auto lg:pb-10">
                 <div className="flex items-center justify-between mb-4 px-1">
                     <h3 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
                         {selectedDateFilter ? selectedDateFilter.toLocaleDateString(lang === 'DE' ? 'de-DE' : (lang === 'CN' ? 'zh-CN' : 'en-US'), { day: 'numeric', month: 'long', year: 'numeric' }) : (activeTagFilters.length > 0 ? t.filteredResults : t.allUploads)}
@@ -422,15 +421,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
                 )}
             </div>
 
-            {/* FAB */}
-            <button 
-                onClick={() => onNavigate('upload')}
-                className="absolute right-6 bottom-28 size-16 bg-primary rounded-[24px] shadow-glow text-background flex items-center justify-center active:scale-95 transition-all z-40 hover:scale-105 hover:brightness-110"
-            >
-                <Plus size={32} strokeWidth={3} />
-            </button>
-
-            <BottomNav activeTab="dashboard" onNavigate={onNavigate} lang={lang} />
+            <div className="h-4 lg:hidden"></div>
 
             {pendingDeleteId && (
                 <ConfirmDialog

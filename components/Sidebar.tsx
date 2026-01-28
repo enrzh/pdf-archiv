@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, FolderOpen, Star, Settings } from 'lucide-react';
+import { LayoutGrid, FolderOpen, Star, Settings, Plus } from 'lucide-react';
 import { ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, lang = 
     ];
 
     return (
-        <aside className="hidden lg:flex flex-col w-64 bg-surface h-screen sticky top-0">
+        <aside className="hidden lg:flex flex-col w-64 bg-surface h-screen sticky top-0 border-r border-white/5">
             <div className="p-8">
                 <h1 className="text-2xl font-black text-primary tracking-tighter flex items-center gap-2">
                     <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
@@ -28,6 +28,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, lang = 
                     </div>
                     PDF Archiv
                 </h1>
+            </div>
+
+            <div className="px-4 mb-8">
+                <button
+                    onClick={() => onNavigate('upload')}
+                    className="w-full bg-primary text-black font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all"
+                >
+                    <Plus size={24} strokeWidth={3} />
+                    <span className="text-sm uppercase tracking-wider">Add Document</span>
+                </button>
             </div>
 
             <nav className="flex-1 px-4 space-y-2">
