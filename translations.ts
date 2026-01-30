@@ -95,7 +95,8 @@ export const TRANSLATIONS = {
       categories: 'categories',
       empty: 'This folder is empty.',
       unsorted: 'Unsorted',
-      updatedRecently: 'Updated recently'
+      updatedRecently: 'Updated recently',
+      downloadFolder: 'Download Folder'
     },
     starred: {
       title: 'Starred',
@@ -219,7 +220,8 @@ export const TRANSLATIONS = {
       categories: 'Kategorien',
       empty: 'Dieser Ordner ist leer.',
       unsorted: 'Unsortiert',
-      updatedRecently: 'Kürzlich aktualisiert'
+      updatedRecently: 'Kürzlich aktualisiert',
+      downloadFolder: 'Ordner herunterladen'
     },
     starred: {
       title: 'Favoriten',
@@ -343,7 +345,8 @@ export const TRANSLATIONS = {
       categories: '类别',
       empty: '此文件夹为空。',
       unsorted: '未分类',
-      updatedRecently: '最近更新'
+      updatedRecently: '最近更新',
+      downloadFolder: '下载文件夹'
     },
     starred: {
       title: '收藏',
