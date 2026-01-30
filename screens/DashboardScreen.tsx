@@ -193,7 +193,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
     };
 
     return (
-        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
+        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col transition-colors duration-300 relative">
             
             {/* Backdrop for closing menu */}
             {activeMenuId && (
@@ -264,7 +264,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ files, onNavig
             </div>
 
             {/* Uploads List */}
-            <div className="px-4 mt-4 flex-1 overflow-y-auto lg:pb-10">
+            <div className="px-4 mt-4 lg:pb-10">
                 <div className="flex items-center justify-between mb-4 px-1">
                     <h3 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
                         {selectedDateFilter ? selectedDateFilter.toLocaleDateString(lang === 'DE' ? 'de-DE' : (lang === 'CN' ? 'zh-CN' : 'en-US'), { day: 'numeric', month: 'long', year: 'numeric' }) : (activeTagFilters.length > 0 ? t.filteredResults : t.allUploads)}

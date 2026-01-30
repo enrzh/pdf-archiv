@@ -15,7 +15,7 @@ export const StarredScreen: React.FC<StarredScreenProps> = ({ files, onNavigate,
     const starredFiles = files.filter(f => f.isStarred);
 
     return (
-        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300">
+        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col transition-colors duration-300">
             
             {/* Header */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-md px-4 pt-8 pb-4 transition-colors duration-300">
@@ -31,7 +31,7 @@ export const StarredScreen: React.FC<StarredScreenProps> = ({ files, onNavigate,
             </div>
 
             {/* List */}
-            <div className="px-4 mt-6 flex-1 overflow-y-auto lg:pb-10">
+            <div className="px-4 mt-6 lg:pb-10">
                 {starredFiles.length > 0 ? (
                     <div className="space-y-3">
                         {starredFiles.map((file) => (
