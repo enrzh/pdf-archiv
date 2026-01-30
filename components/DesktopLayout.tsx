@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScreenName } from '../types';
+import type { ScreenName } from '../types';
 
 interface DesktopLayoutProps {
     sidebar: React.ReactNode;

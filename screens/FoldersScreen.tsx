@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Folder, FileText, MoreVertical, ChevronLeft, Download, Loader2 } from 'lucide-react';
 import JSZip from 'jszip';
-import { Category, FileItem, ScreenName, Language } from '../types';
+import type { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
 interface FoldersScreenProps {
