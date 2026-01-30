@@ -297,6 +297,7 @@ export default function App() {
   if (isDesktop) {
     return (
       <DesktopLayout
+        screen={currentScreen}
         sidebar={
           <Sidebar
             activeTab={currentScreen}

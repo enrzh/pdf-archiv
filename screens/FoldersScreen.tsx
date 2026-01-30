@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Folder, FileText, MoreVertical, ChevronLeft } from 'lucide-react';
+import { Folder, FileText, MoreVertical, ChevronLeft, Download, Loader2 } from 'lucide-react';
+import JSZip from 'jszip';
 import { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -14,6 +15,66 @@ interface FoldersScreenProps {
 export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate, onFileSelect, lang, categories }) => {
     const t = TRANSLATIONS[lang].folders;
     const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    const handleDownloadFolder = async () => {
+        if (!selectedFolder || filteredFiles.length === 0) return;
+
+        setIsDownloading(true);
+        try {
+            const zip = new JSZip();
+
+            // Fetch all files in parallel
+            const fetchPromises = filteredFiles.map(async (file) => {
+                if (!file.fileUrl) return;
+                try {
+                    const response = await fetch(file.fileUrl);
+                    if (!response.ok) throw new Error(`Failed to fetch ${file.name}`);
+                    const blob = await response.blob();
+
+                    let fileName = file.name;
+                    if (!fileName.toLowerCase().endsWith('.pdf')) {
+                        fileName += '.pdf';
+                    }
+
+                    // Collision avoidance
+                    let finalName = fileName;
+                    let counter = 1;
+                    while (zip.file(finalName)) {
+                        const dotIndex = fileName.lastIndexOf('.');
+                        if (dotIndex !== -1) {
+                            finalName = `${fileName.substring(0, dotIndex)} (${counter})${fileName.substring(dotIndex)}`;
+                        } else {
+                            finalName = `${fileName} (${counter})`;
+                        }
+                        counter++;
+                    }
+
+                    zip.file(finalName, blob);
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+
+            await Promise.all(fetchPromises);
+
+            const content = await zip.generateAsync({ type: 'blob' });
+
+            // Trigger download
+            const url = window.URL.createObjectURL(content);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${selectedFolder}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error zipping folder:', error);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     // Aggregate tags to create folders
     const folders = useMemo(() => {
@@ -77,7 +138,7 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
                             <Folder size={28} className="text-primary" />
                          </div>
                     )}
-                    <div>
+                    <div className="flex-1">
                         <h1 className="text-2xl font-bold text-white tracking-tight">
                             {selectedFolder || t.title}
                         </h1>
@@ -85,6 +146,16 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
                             {selectedFolder ? `${filteredFiles.length} ${t.documents}` : `${folders.length} ${t.categories}`}
                         </p>
                     </div>
+                    {selectedFolder && filteredFiles.length > 0 && (
+                        <button
+                            onClick={handleDownloadFolder}
+                            disabled={isDownloading}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-glow active:scale-95 ${isDownloading ? 'bg-surface text-gray-500' : 'bg-primary text-black hover:brightness-110'}`}
+                        >
+                            {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} strokeWidth={2.5} />}
+                            <span className="hidden sm:inline">{t.downloadFolder}</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
