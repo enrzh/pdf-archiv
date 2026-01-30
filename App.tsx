@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DashboardScreen } from './screens/DashboardScreen';
 import { ViewerScreen } from './screens/ViewerScreen';
 import { UploadScreen } from './screens/UploadScreen';
@@ -27,58 +27,6 @@ const DEFAULT_CATEGORIES: Category[] = [
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenName>('dashboard');
   const [files, setFiles] = useState<FileItem[]>([]);
-
-  const isOverlayActive = ['viewer', 'upload', 'export'].includes(currentScreen);
-
-  const dashboardRef = useRef<HTMLDivElement>(null);
-  const foldersRef = useRef<HTMLDivElement>(null);
-  const starredRef = useRef<HTMLDivElement>(null);
-  const settingsRef = useRef<HTMLDivElement>(null);
-
-  const sectionRefs: Record<string, React.RefObject<HTMLDivElement>> = {
-    dashboard: dashboardRef,
-    folders: foldersRef,
-    starred: starredRef,
-    settings: settingsRef,
-  };
-
-  useEffect(() => {
-    if (isOverlayActive) return;
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -20% 0px',
-      threshold: 0.1,
-    };
-
-    const observerCallback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const sectionId = entry.target.getAttribute('data-section');
-          if (sectionId) {
-            setCurrentScreen(sectionId as ScreenName);
-          }
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    Object.values(sectionRefs).forEach((ref) => {
-      if (ref.current) observer.observe(ref.current);
-    });
-
-    return () => observer.disconnect();
-  }, [isOverlayActive]);
-
-  const scrollToSection = (screen: ScreenName) => {
-    if (sectionRefs[screen]) {
-      sectionRefs[screen].current?.scrollIntoView({ behavior: 'smooth' });
-      setCurrentScreen(screen);
-    } else {
-      setCurrentScreen(screen);
-    }
-  };
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>('DE'); // Default German
   const [isStorageReady, setIsStorageReady] = useState(false);
@@ -258,8 +206,54 @@ export default function App() {
 
   const selectedFile = files.find(f => f.id === selectedFileId);
 
-  const renderOverlay = () => {
+  const renderScreen = () => {
     switch (currentScreen) {
+      case 'dashboard':
+        return (
+          <DashboardScreen 
+            files={files}
+            lang={lang}
+            categories={categories}
+            onNavigate={(screen) => setCurrentScreen(screen)} 
+            onFileSelect={handleNavigateToViewer}
+            onExport={() => setCurrentScreen('export')}
+            onDelete={handleDelete}
+            onToggleRead={handleToggleRead}
+          />
+        );
+      case 'folders':
+        return (
+            <FoldersScreen 
+                files={files}
+                lang={lang}
+                categories={categories}
+                onNavigate={(screen) => setCurrentScreen(screen)}
+                onFileSelect={handleNavigateToViewer}
+            />
+        );
+      case 'starred':
+        return (
+            <StarredScreen 
+                files={files}
+                lang={lang}
+                onNavigate={(screen) => setCurrentScreen(screen)}
+                onFileSelect={handleNavigateToViewer}
+            />
+        );
+      case 'settings':
+        return (
+            <SettingsScreen 
+                lang={lang}
+                setLang={setLang}
+                previewDefaultEnabled={previewDefaultEnabled}
+                onPreviewDefaultChange={setPreviewDefaultEnabled}
+                categories={categories}
+                onAddTag={handleAddTag}
+                onEditTag={handleEditTag}
+                onDeleteTag={handleDeleteTag}
+                onNavigate={(screen) => setCurrentScreen(screen)}
+            />
+        );
       case 'viewer':
         return selectedFile ? (
           <ViewerScreen 
@@ -273,7 +267,7 @@ export default function App() {
             onToggleRead={handleToggleRead}
             onUpdate={handleUpdateFile}
           />
-        ) : null;
+        ) : <DashboardScreen files={files} lang={lang} categories={categories} onNavigate={setCurrentScreen} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
       case 'upload':
         return (
           <UploadScreen 
@@ -289,63 +283,15 @@ export default function App() {
              files={files}
              lang={lang}
              onBack={() => {
+                // Return to viewer if we have a selected file, else dashboard
                 if (selectedFileId) setCurrentScreen('viewer');
                 else setCurrentScreen('dashboard');
              }} 
             />
         );
       default:
-        return null;
+        return <DashboardScreen files={files} lang={lang} categories={categories} onNavigate={(screen) => setCurrentScreen(screen)} onFileSelect={handleNavigateToViewer} onDelete={handleDelete} onExport={() => setCurrentScreen('export')} onToggleRead={handleToggleRead} />;
     }
-  };
-
-  const renderUnifiedLayout = () => {
-    return (
-      <div className="flex flex-col">
-        <div ref={dashboardRef} data-section="dashboard">
-          <DashboardScreen
-            files={files}
-            lang={lang}
-            categories={categories}
-            onNavigate={scrollToSection}
-            onFileSelect={handleNavigateToViewer}
-            onExport={() => setCurrentScreen('export')}
-            onDelete={handleDelete}
-            onToggleRead={handleToggleRead}
-          />
-        </div>
-        <div ref={foldersRef} data-section="folders">
-          <FoldersScreen
-            files={files}
-            lang={lang}
-            categories={categories}
-            onNavigate={scrollToSection}
-            onFileSelect={handleNavigateToViewer}
-          />
-        </div>
-        <div ref={starredRef} data-section="starred">
-          <StarredScreen
-            files={files}
-            lang={lang}
-            onNavigate={scrollToSection}
-            onFileSelect={handleNavigateToViewer}
-          />
-        </div>
-        <div ref={settingsRef} data-section="settings">
-          <SettingsScreen
-            lang={lang}
-            setLang={setLang}
-            previewDefaultEnabled={previewDefaultEnabled}
-            onPreviewDefaultChange={setPreviewDefaultEnabled}
-            categories={categories}
-            onAddTag={handleAddTag}
-            onEditTag={handleEditTag}
-            onDeleteTag={handleDeleteTag}
-            onNavigate={scrollToSection}
-          />
-        </div>
-      </div>
-    );
   };
 
   if (isDesktop) {
@@ -355,12 +301,12 @@ export default function App() {
         sidebar={
           <Sidebar
             activeTab={currentScreen}
-            onNavigate={scrollToSection}
+            onNavigate={(screen) => setCurrentScreen(screen)}
             lang={lang}
           />
         }
       >
-        {isOverlayActive ? renderOverlay() : renderUnifiedLayout()}
+        {renderScreen()}
       </DesktopLayout>
     );
   }
@@ -368,13 +314,13 @@ export default function App() {
   return (
     <div className="bg-black min-h-screen font-sans flex justify-center">
       <div className="w-full max-w-md relative bg-background shadow-2xl h-screen overflow-hidden flex flex-col">
-        <div className="flex-1 min-h-0 relative overflow-y-auto">
-          {isOverlayActive ? renderOverlay() : renderUnifiedLayout()}
+        <div className="flex-1 min-h-0 relative overflow-hidden">
+          {renderScreen()}
         </div>
-        {!isDesktop && !isOverlayActive && (
+        {!isDesktop && (
           <BottomNav
             activeTab={currentScreen}
-            onNavigate={scrollToSection}
+            onNavigate={setCurrentScreen}
             lang={lang}
           />
         )}

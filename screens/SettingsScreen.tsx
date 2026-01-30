@@ -88,7 +88,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     };
 
     return (
-        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col transition-colors duration-300 relative">
+        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300 relative">
             {/* Header */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-xl px-4 pt-8 pb-4 transition-colors duration-300">
                 <div className="flex items-center gap-3">
@@ -102,7 +102,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 </div>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div className="p-4 flex-1 space-y-4 overflow-y-auto">
                  {/* Dark Mode Card */}
                  <div className="bg-surface rounded-2xl overflow-hidden shadow-sm">
                     <button 

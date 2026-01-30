@@ -122,7 +122,7 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
         : [];
 
     return (
-        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col transition-colors duration-300">
+        <div className="bg-background text-gray-100 lg:pb-10 animate-fade-in flex flex-col h-full transition-colors duration-300">
             {/* Header */}
             <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-md px-4 pt-8 pb-4 transition-colors duration-300">
                 <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
             </div>
 
             {/* Content */}
-            <div className="p-4 lg:pb-10">
+            <div className="p-4 flex-1 overflow-y-auto lg:pb-10">
                 {selectedFolder ? (
                     /* Folder Contents View */
                     <div className="space-y-4 animate-fade-in">
