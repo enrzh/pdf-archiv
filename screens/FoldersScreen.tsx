@@ -21,9 +21,8 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
 
         setIsDownloading(true);
         try {
-            const JSZipModule = await import('jszip') as any;
-            const JSZip = JSZipModule.default || JSZipModule;
-            const zip = new JSZip();
+            const JSZip = (await import('jszip')).default;
+            const zip = new (JSZip as any)();
 
             // Fetch all files in parallel
             const fetchPromises = filteredFiles.map(async (file) => {
