@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { Folder, FileText, MoreVertical, ChevronLeft, Download, Loader2 } from 'lucide-react';
-import JSZip from 'jszip';
 import type { Category, FileItem, ScreenName, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 
@@ -22,6 +21,8 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({ files, onNavigate,
 
         setIsDownloading(true);
         try {
+            const JSZipModule = await import('jszip') as any;
+            const JSZip = JSZipModule.default || JSZipModule;
             const zip = new JSZip();
 
             // Fetch all files in parallel
